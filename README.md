@@ -45,9 +45,9 @@ npm run start
 
 ## Estructura
 
-- `src/app/`: layout, página, estilos globales y fuentes locales.
+- `src/app/`: layout, página, estilos globales, fuentes locales, íconos (`icon.svg`, `apple-icon.png`, `favicon.ico`) e imagen para compartir (`opengraph-image.jpg`).
 - `src/components/`: secciones de la landing y acciones modales.
-- `src/config/site.ts`: identidad, navegación y textos de los avisos.
+- `src/config/site.ts`: identidad, URL pública (base de los enlaces de la imagen para compartir), navegación y textos de los avisos.
 - `src/data/courts.ts`: datos de las tres canchas.
 - `public/images/`: fotografías WebP optimizadas.
 

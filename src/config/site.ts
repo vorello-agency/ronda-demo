@@ -5,6 +5,7 @@ export const site = {
   title: "El juego tiene lugar.",
   description: "Canchas para jugar. Un club para volver.",
   studio: "Vorello Agency",
+  url: "https://ronda-demo.vorelloagency.com",
 } as const;
 
 export const navigation: readonly ({ label: string; href: string } | { label: string; topic: NoticeTopic })[] = [
