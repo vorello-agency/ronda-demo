@@ -8,6 +8,8 @@ export const site = {
 } as const;
 
 export const navigation: readonly ({ label: string; href: string } | { label: string; topic: NoticeTopic })[] = [
+  { label: "El club", href: "#el-club" },
+  { label: "Comunidad", href: "#comunidad" },
 ] as const;
 
 export const notices = {

@@ -57,7 +57,13 @@ button, a { touch-action: manipulation; }
 .court-name { white-space: nowrap; font-size: 13px; }
 .court-surface-desktop { margin-left: 3px; }
 .court-surface-mobile, .mobile-tour { display: none; }
+.community-intro { display: grid; grid-template-columns: 54% 46%; border-top: 1px solid var(--rule); padding-top: 16px; }
+.community-copy { padding: 16px 28px 32px var(--gutter); }
 .eyebrow { margin: 0; font-size: 12px; font-weight: 500; letter-spacing: .3em; line-height: 1.6; text-transform: uppercase; color: var(--color-cobalt); }
+.community-copy h2 { font-family: var(--font-display); font-weight: 400; color: var(--color-cobalt); font-size: clamp(38px, 3.8vw, 73px); letter-spacing: -.05em; line-height: 1.12; margin: 14px 0 0; }
+.mobile-break { display: none; }
+.community-photo { aspect-ratio: 1.65; overflow: hidden; }
+.community-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 38%; }
 .concept-note { display: flex; justify-content: space-between; gap: 20px; padding: 24px var(--gutter); font-size: 11px; line-height: 1.5; border-top: 1px solid var(--rule); }
 .icon-button { display: inline-grid; place-items: center; width: 44px; height: 44px; color: var(--color-cobalt); }
 dialog { color: var(--color-ink); background: var(--color-mineral); border: none; padding: 0; }
@@ -95,6 +101,7 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
   .hero-description { font-size: 22px; margin-top: 28px; }
   .hero-reserve { min-width: 225px; padding: 14px 18px; font-size: 17px; }
   .hero-tour { font-size: 16px; }
+  .community-copy h2 { font-size: 42px; }
 }
 @media (max-width: 1023px) {
   .desktop-nav, .header-reserve { display: none; }
@@ -127,12 +134,82 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
   .court-line { order: 2; height: 0; border-right: none; min-width: 12px; }
   .mobile-tour { display: flex; order: 3; font-size: 12px; gap: 8px; min-height: 44px; }
   .mobile-tour svg { width: 18px; }
+  .community-intro { display: flex; flex-direction: column; padding-top: 0; border-top: 0; }
+  .community-copy { padding: 16px var(--gutter) 12px; }
   .eyebrow { font-size: 10px; letter-spacing: .28em; }
+  .community-copy h2 { font-size: clamp(33px, 9.5vw, 68px); line-height: 1.13; letter-spacing: -.035em; margin-top: 8px; text-wrap: initial; }
+  .mobile-break { display: block; }
+  .community-photo { aspect-ratio: 1.43; }
   .concept-note { flex-direction: column; gap: 5px; padding-block: 20px; font-size: 10px; }
   .notice-content { padding: 64px 24px 28px; }
+}
+/* El Club + Comunidad. The opening keeps the approved heading and photograph. */
+.community-intro { padding-bottom: clamp(48px, 5vw, 96px); }
+.community-copy { grid-column: 1; grid-row: 1; padding-bottom: 0; }
+.community-figure { grid-column: 2; grid-row: 1 / span 2; margin: 0; min-width: 0; }
+.community-caption { display: flex; justify-content: space-between; gap: 16px; padding: 16px var(--gutter) 0 0; font-size: 11px; line-height: 1.5; color: var(--color-cobalt); }
+.club-description { grid-column: 1; grid-row: 2; align-self: end; padding: 36px clamp(32px, 7vw, 140px) 0 var(--gutter); }
+.club-description p { max-width: 42ch; margin: 0; font-size: 17px; line-height: 1.65; text-wrap: pretty; }
+.club-description .club-lead { max-width: 22ch; margin-bottom: 16px; font-size: clamp(23px, 2vw, 32px); line-height: 1.3; letter-spacing: -.035em; }
+.club-community-link { margin-top: 24px; font-size: 16px; }
+.club-community-link:hover svg, .community-next:hover svg { transform: translate(3px, 3px); }
+.community-story { display: grid; grid-template-columns: 54fr 46fr; gap: clamp(32px, 5vw, 96px); padding: clamp(56px, 6.5vw, 124px) var(--gutter); color: var(--color-mineral); background: var(--color-cobalt); }
+.community-story:focus-visible { outline: 2px solid var(--color-mineral); outline-offset: -8px; }
+.community-story .eyebrow { color: var(--color-mineral); }
+.community-story h2 { margin: 32px 0 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(52px, 6vw, 115px); letter-spacing: -.035em; line-height: 1.08; }
+.community-court-mark { position: relative; width: clamp(130px, 13vw, 250px); aspect-ratio: 2.2; border: 1px solid #eeece370; margin-top: 48px; }
+.community-court-mark::before, .community-court-mark::after, .community-court-mark span { content: ""; position: absolute; }
+.community-court-mark::before { inset: 14% 0; border-block: 1px solid #eeece370; }
+.community-court-mark::after { inset: 14% 24%; border-inline: 1px solid #eeece370; }
+.community-court-mark span { inset: 0 50%; border-left: 1px solid var(--color-citron); }
+.community-story-copy { padding-top: 48px; max-width: 50ch; }
+.community-story-copy > p { margin: 0; font-size: 18px; line-height: 1.65; text-wrap: pretty; }
+.community-story-copy .community-manifesto { margin-bottom: 24px; font-size: clamp(24px, 2.1vw, 36px); letter-spacing: -.035em; line-height: 1.3; }
+.community-moments { margin: 32px 0 0; }
+.community-moments > div { display: grid; grid-template-columns: 120px 1fr; gap: 20px; padding: 20px 0; border-top: 1px solid #eeece370; }
+.community-moments dt { font-size: 14px; font-weight: 500; line-height: 1.6; }
+.community-moments dd { margin: 0; font-size: 16px; line-height: 1.6; text-wrap: pretty; }
+.community-next { margin-top: 20px; color: var(--color-mineral); font-size: 16px; }
+.community-next:focus-visible { outline-color: var(--color-citron); }
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .community-photo { aspect-ratio: .93; }
+  .community-photo img { object-position: 55% center; }
+  .club-description { padding-right: 32px; }
+  .community-caption { flex-direction: column; gap: 2px; }
+  .community-story { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .community-story h2 { font-size: clamp(47px, 5.5vw, 57px); }
+  .community-story-copy { padding-top: 0; }
+  .community-moments > div { grid-template-columns: 1fr; gap: 8px; }
+}
+@media (max-width: 767px) {
+  .community-intro { padding-bottom: 40px; }
+  .community-copy { padding-bottom: 12px; }
+  .community-caption { padding: 12px var(--gutter) 0; font-size: 10px; gap: 8px; }
+  .club-description { padding: 28px var(--gutter) 0; }
+  .club-description p { font-size: 18px; line-height: 1.6; }
+  .club-description .club-lead { font-size: 25px; margin-bottom: 16px; }
+  .club-community-link { margin-top: 20px; }
+  .community-story { grid-template-columns: 1fr; gap: 32px; padding-block: 44px 40px; }
+  .community-story-heading { position: relative; }
+  .community-story h2 { margin-top: 24px; font-size: clamp(42px, 11.5vw, 82px); }
+  .community-court-mark { display: none; }
+  .community-story-copy { padding-top: 0; max-width: 52ch; }
+  .community-story-copy .community-manifesto { font-size: 25px; margin-bottom: 20px; }
+  .community-moments { margin-top: 28px; }
+  .community-moments > div { grid-template-columns: 1fr; gap: 8px; padding-block: 18px; }
+  .community-moments dt { font-size: 13px; }
+  .community-moments dd { font-size: 18px; }
+  .community-next { margin-top: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
+/* Editorial sentence breaks preserve readable units across viewport widths. */
+.editorial-break { display: block; margin-top: .65em; }
+.community-story-copy > .editorial-continuation { margin-top: .75em; }
+@media (max-width: 767px) {
+  .editorial-break { margin-top: .5em; }
+}
