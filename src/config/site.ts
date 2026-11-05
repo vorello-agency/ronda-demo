@@ -9,6 +9,7 @@ export const site = {
 
 export const navigation: readonly ({ label: string; href: string } | { label: string; topic: NoticeTopic })[] = [
   { label: "El club", href: "#el-club" },
+  { label: "Canchas", href: "#canchas" },
   { label: "Comunidad", href: "#comunidad" },
 ] as const;
 

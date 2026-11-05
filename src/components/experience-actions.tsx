@@ -4,8 +4,9 @@ import { createContext, useContext, useRef, useState, type ReactNode } from "rea
 import { ArrowUpRightIcon, XIcon } from "@phosphor-icons/react";
 import { notices, type NoticeTopic } from "@/config/site";
 import { containDialogFocus } from "@/lib/dialog";
+import type { ReservationCourt } from "@/data/courts";
 
-type OpenNotice = (topic: NoticeTopic, returnTo?: HTMLElement) => void;
+type OpenNotice = (topic: NoticeTopic, returnTo?: HTMLElement, court?: ReservationCourt) => void;
 const ActionsContext = createContext<OpenNotice | null>(null);
 
 export function useExperienceActions() {
@@ -17,12 +18,13 @@ export function useExperienceActions() {
 export function ExperienceActions({ children }: { children: ReactNode }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
-  const [topic, setTopic] = useState<NoticeTopic>("reservation");
-  const destination = "el-club";
+  const [notice, setNotice] = useState<{ topic: NoticeTopic; court?: ReservationCourt }>({ topic: "reservation" });
+  const { topic, court } = notice;
+  const destination = court ? "canchas" : "el-club";
 
-  const open: OpenNotice = (nextTopic, returnTo) => {
+  const open: OpenNotice = (nextTopic, returnTo, selectedCourt) => {
     returnFocus.current = returnTo ?? (document.activeElement as HTMLElement);
-    setTopic(nextTopic);
+    setNotice({ topic: nextTopic, court: nextTopic === "reservation" ? selectedCourt : undefined });
     dialog.current?.showModal();
     document.body.classList.add("has-modal");
   };
@@ -49,22 +51,22 @@ export function ExperienceActions({ children }: { children: ReactNode }) {
             <XIcon size={26} weight="light" aria-hidden="true" />
           </button>
           <p className="eyebrow">{notices[topic].eyebrow}</p>
-          <h2 id="notice-title">{notices[topic].title}</h2>
-          <p id="notice-description">{notices[topic].body}</p>
+          <h2 id="notice-title">{court ? `${court.id} · ${court.name}` : notices[topic].title}</h2>
+          <p id="notice-description">{court && <span>Elegiste {court.name} ({court.surface.toLowerCase()}). </span>}{notices[topic].body}</p>
           <a className="button" href={`#${destination}`} onClick={() => {
             close();
             returnFocus.current = document.getElementById(destination);
-          }}>Conocer el club <ArrowUpRightIcon size={22} weight="light" aria-hidden="true" /></a>
+          }}>{court ? "Volver a las canchas" : "Conocer el club"} <ArrowUpRightIcon size={22} weight="light" aria-hidden="true" /></a>
         </div>
       </dialog>
     </ActionsContext>
   );
 }
 
-export function ReserveButton({ className = "", arrow = true }: { className?: string; arrow?: boolean }) {
+export function ReserveButton({ className = "", arrow = true, court }: { className?: string; arrow?: boolean; court?: ReservationCourt }) {
   const open = useExperienceActions();
-  return <button className={`button ${className}`} onClick={(event) => open("reservation", event.currentTarget)}>
-    Reservar cancha
+  return <button className={`button ${className}`} aria-label={court ? `Reservar esta cancha: ${court.id} ${court.name}` : undefined} onClick={(event) => open("reservation", event.currentTarget, court)}>
+    {court ? "Reservar esta cancha" : "Reservar cancha"}
     {arrow && <ArrowUpRightIcon size={24} weight="light" aria-hidden="true" />}
   </button>;
 }

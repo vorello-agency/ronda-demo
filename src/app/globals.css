@@ -171,6 +171,12 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
 .community-moments dd { margin: 0; font-size: 16px; line-height: 1.6; text-wrap: pretty; }
 .community-next { margin-top: 20px; color: var(--color-mineral); font-size: 16px; }
 .community-next:focus-visible { outline-color: var(--color-citron); }
+.courts-transition { display: grid; grid-template-columns: 54fr 46fr; gap: clamp(32px, 5vw, 96px); padding: clamp(48px, 5.5vw, 106px) var(--gutter); }
+.courts-transition h2 { margin: 24px 0 0; font-family: var(--font-display); font-size: clamp(38px, 4vw, 77px); font-weight: 400; line-height: 1.12; letter-spacing: -.035em; color: var(--color-cobalt); }
+.courts-transition-copy { align-self: end; }
+.courts-transition-copy > p:first-child { max-width: 36ch; margin: 0; font-size: 18px; line-height: 1.65; text-wrap: pretty; }
+.courts-index { display: flex; flex-wrap: wrap; gap: 16px 24px; margin: 28px 0 0; padding-top: 20px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--color-cobalt); }
+.courts-index b { font-family: var(--font-display); font-size: 22px; font-weight: 400; }
 
 @media (min-width: 768px) and (max-width: 1023px) {
   .community-photo { aspect-ratio: .93; }
@@ -201,6 +207,11 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
   .community-moments dt { font-size: 13px; }
   .community-moments dd { font-size: 18px; }
   .community-next { margin-top: 16px; }
+  .courts-transition { grid-template-columns: 1fr; gap: 24px; padding-block: 40px; }
+  .courts-transition .eyebrow { max-width: 29ch; }
+  .courts-transition h2 { margin-top: 20px; font-size: clamp(32px, 8.7vw, 65px); }
+  .courts-transition-copy > p:first-child { max-width: 45ch; }
+  .courts-index { justify-content: space-between; gap: 12px; margin-top: 24px; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
