@@ -6,8 +6,10 @@ import { CourtsTransition } from "@/components/courts-transition";
 import { CourtsSection } from "@/components/courts-section";
 import { ClubFacilities } from "@/components/club-facilities";
 import { TrainingSection } from "@/components/training-section";
+import { TournamentsSection } from "@/components/tournaments-section";
+import { FinalCta } from "@/components/final-cta";
+import { SiteFooter } from "@/components/site-footer";
 import { ExperienceActions } from "@/components/experience-actions";
-import { site } from "@/config/site";
 
 export default function Home() {
   return <ExperienceActions>
@@ -22,7 +24,9 @@ export default function Home() {
       <CourtsSection />
       <ClubFacilities />
       <TrainingSection />
+      <TournamentsSection />
+      <FinalCta />
     </main>
-    <footer className="concept-note"><span>{site.name} · {site.descriptor}</span><span>Proyecto conceptual de {site.studio}. Fotografías generadas con IA.</span></footer>
+    <SiteFooter />
   </ExperienceActions>;
 }

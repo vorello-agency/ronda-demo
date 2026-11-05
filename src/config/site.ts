@@ -14,6 +14,12 @@ export const navigation: readonly ({ label: string; href: string } | { label: st
   { label: "Comunidad", href: "#comunidad" },
 ] as const;
 
+export const footerNavigation = [
+  ...navigation.flatMap((item) => "href" in item ? [item] : []),
+  { label: "Torneos y encuentros", href: "#torneos" },
+  { label: "Instalaciones", href: "#instalaciones" },
+] as const;
+
 export const notices = {
   reservation: {
     eyebrow: "Proyecto conceptual",
