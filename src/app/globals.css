@@ -221,6 +221,8 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
 /* Editorial sentence breaks preserve readable units across viewport widths. */
 .editorial-break { display: block; margin-top: .65em; }
 .community-story-copy > .editorial-continuation { margin-top: .75em; }
+.training-intro .editorial-break { margin-top: .35em; }
 @media (max-width: 767px) {
   .editorial-break { margin-top: .5em; }
+  .training-intro .editorial-break { margin-top: .3em; }
 }

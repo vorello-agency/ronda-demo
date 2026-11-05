@@ -20,7 +20,7 @@ export function ExperienceActions({ children }: { children: ReactNode }) {
   const returnFocus = useRef<HTMLElement | null>(null);
   const [notice, setNotice] = useState<{ topic: NoticeTopic; court?: ReservationCourt }>({ topic: "reservation" });
   const { topic, court } = notice;
-  const destination = court ? "canchas" : "el-club";
+  const destination = topic === "training" ? "entrenamiento" : court ? "canchas" : "el-club";
 
   const open: OpenNotice = (nextTopic, returnTo, selectedCourt) => {
     returnFocus.current = returnTo ?? (document.activeElement as HTMLElement);
@@ -56,7 +56,7 @@ export function ExperienceActions({ children }: { children: ReactNode }) {
           <a className="button" href={`#${destination}`} onClick={() => {
             close();
             returnFocus.current = document.getElementById(destination);
-          }}>{court ? "Volver a las canchas" : "Conocer el club"} <ArrowUpRightIcon size={22} weight="light" aria-hidden="true" /></a>
+          }}>{topic === "training" ? "Volver a entrenamiento" : court ? "Volver a las canchas" : "Conocer el club"} <ArrowUpRightIcon size={22} weight="light" aria-hidden="true" /></a>
         </div>
       </dialog>
     </ActionsContext>
@@ -68,5 +68,12 @@ export function ReserveButton({ className = "", arrow = true, court }: { classNa
   return <button className={`button ${className}`} aria-label={court ? `Reservar esta cancha: ${court.id} ${court.name}` : undefined} onClick={(event) => open("reservation", event.currentTarget, court)}>
     {court ? "Reservar esta cancha" : "Reservar cancha"}
     {arrow && <ArrowUpRightIcon size={24} weight="light" aria-hidden="true" />}
+  </button>;
+}
+
+export function TrainingInfoButton({ className = "" }: { className?: string }) {
+  const open = useExperienceActions();
+  return <button className={`text-link ${className}`} onClick={(event) => open("training", event.currentTarget)}>
+    Sobre las clases <ArrowUpRightIcon size={22} weight="light" aria-hidden="true" />
   </button>;
 }

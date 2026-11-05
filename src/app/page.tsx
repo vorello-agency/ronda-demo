@@ -5,6 +5,7 @@ import { CommunityStory } from "@/components/community-story";
 import { CourtsTransition } from "@/components/courts-transition";
 import { CourtsSection } from "@/components/courts-section";
 import { ClubFacilities } from "@/components/club-facilities";
+import { TrainingSection } from "@/components/training-section";
 import { ExperienceActions } from "@/components/experience-actions";
 import { site } from "@/config/site";
 
@@ -20,6 +21,7 @@ export default function Home() {
       <CourtsTransition />
       <CourtsSection />
       <ClubFacilities />
+      <TrainingSection />
     </main>
     <footer className="concept-note"><span>{site.name} · {site.descriptor}</span><span>Proyecto conceptual de {site.studio}. Fotografías generadas con IA.</span></footer>
   </ExperienceActions>;
