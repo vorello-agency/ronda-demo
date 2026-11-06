@@ -74,8 +74,8 @@
   .tournaments-formats dt { font-size: 18px; }
   .tournaments-formats dd { font-size: 18px; line-height: 1.6; }
   .ronda-final-cta { padding-block: 36px 40px; }
-  .final-cta-layout { grid-template-columns: 1fr; gap: 24px; margin-top: 24px; }
-  .final-cta-layout h2 { font-size: clamp(68px, 20vw, 142px); }
+  .final-cta-layout { grid-template-columns: minmax(0, 1fr); gap: 24px; margin-top: 24px; }
+  .final-cta-layout h2 { font-size: clamp(68px, 20vw, 142px); overflow-wrap: anywhere; }
   .final-cta-action { display: grid; grid-template-columns: 1fr auto; gap: 24px 16px; align-items: center; padding: 0; }
   .final-cta-ball { grid-column: 2; grid-row: 1; width: 56px; height: 56px; margin: 0; }
   .final-cta-action > p { grid-column: 1; grid-row: 1; font-size: 24px; margin: 0; }
