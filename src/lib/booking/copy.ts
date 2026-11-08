@@ -9,6 +9,13 @@ export const WEEKDAYS_SHORT = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"
 export const WEEKDAYS_LONG = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"] as const;
 export const MONTHS = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"] as const;
 
+/** Franjas de la grilla de horarios. Cubren `HOURS` completo, en orden y sin solaparse. */
+export const HOUR_PERIODS = [
+  { label: "Mañana", hours: [8, 9, 10, 11] },
+  { label: "Tarde", hours: [12, 13, 14, 15, 16, 17] },
+  { label: "Noche", hours: [18, 19, 20, 21] },
+] as const satisfies readonly { label: string; hours: readonly Hour[] }[];
+
 export const courtName = (id: CourtId): string => courts.find((court) => court.id === id)?.name ?? id;
 
 const pad = (value: number) => String(value).padStart(2, "0");

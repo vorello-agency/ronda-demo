@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* El dibujo del plano usa el atributo SVG `transform`, que Tailwind tomaría como utilidad global. No usa utilidades. */
+@source not "../components/booking/club-plan-art.tsx";
 
 @theme inline {
   --color-mineral: #eeece3;

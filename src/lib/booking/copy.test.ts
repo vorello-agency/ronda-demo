@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { courts } from "../../data/courts.ts";
-import { alternativeLabel, correctionText, courtName, dayLabel, formatHour, formatRange, joinList, longDayLabel, noticeText } from "./copy.ts";
+import { HOUR_PERIODS, alternativeLabel, correctionText, courtName, dayLabel, formatHour, formatRange, joinList, longDayLabel, noticeText } from "./copy.ts";
 import type { Notice } from "./conflicts.ts";
 import type { Correction } from "./selection.ts";
+import { HOURS } from "./club-time.ts";
 import { NOW } from "./test-utils.ts";
 
 describe("formatos", () => {
@@ -27,6 +28,11 @@ describe("formatos", () => {
     assert.equal(joinList(["Central"]), "Central");
     assert.equal(joinList(["Central", "Club"]), "Central y Club");
     assert.equal(joinList(["Central", "Jardín", "Club"]), "Central, Jardín y Club");
+  });
+
+  it("las franjas de horarios cubren todas las horas, en orden y una sola vez", () => {
+    assert.deepEqual(HOUR_PERIODS.flatMap((period) => period.hours), [...HOURS]);
+    assert.deepEqual(HOUR_PERIODS.map((period) => period.label), ["Mañana", "Tarde", "Noche"]);
   });
 
   it("los nombres de cancha salen de courts.ts", () => {
