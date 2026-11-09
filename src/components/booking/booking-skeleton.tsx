@@ -1,14 +1,15 @@
 import { courts } from "@/data/courts";
 import { HORIZON_DAYS } from "@/lib/booking/club-time";
-import { HOUR_PERIODS } from "@/lib/booking/copy";
-import { ClubPlanArt, courtTagStyle } from "./club-plan-art";
+import { HOUR_PERIODS, SLOT_LENGTH_TEXT } from "@/lib/booking/copy";
+import type { ReactNode } from "react";
+import { courtTagStyle } from "./court-tag-style";
 
 /**
  * Estructura del flujo sin datos que dependan de la hora: la cinta de días, los horarios y el resumen se
  * resuelven en el cliente (E2). Reserva las mismas dimensiones que el flujo para que no haya saltos al
- * hidratar. El plano y las etiquetas de cancha sí son definitivos.
+ * montar el flujo. El plano (que llega como `art`, renderizado en el servidor) y las etiquetas sí son definitivos.
  */
-export function BookingSkeleton() {
+export function BookingSkeleton({ art }: { art: ReactNode }) {
   return <div className="ronda-booking-flow" aria-busy="true">
     <p className="sr-only">Cargando la disponibilidad simulada.</p>
     <noscript>
@@ -34,7 +35,7 @@ export function BookingSkeleton() {
           <span className="ronda-booking-placeholder is-meta" aria-hidden="true" />
         </div>
         <div className="ronda-plan">
-          <div className="ronda-plan-figure"><ClubPlanArt /></div>
+          <div className="ronda-plan-figure">{art}</div>
           <div className="ronda-plan-tags" aria-hidden="true">
             {courts.map((court) => <span key={court.id} className="ronda-plan-tag" style={courtTagStyle(court.id)}>
               <span className="ronda-plan-tag-number">{court.id}</span>
@@ -49,7 +50,7 @@ export function BookingSkeleton() {
         <section aria-labelledby="ronda-when-title">
           <div className="ronda-booking-panel-head">
             <h2 className="ronda-booking-question" id="ronda-when-title">¿A qué hora?</h2>
-            <p className="ronda-booking-meta">60 min · hora del club</p>
+            <p className="ronda-booking-meta">{SLOT_LENGTH_TEXT}</p>
           </div>
           <div className="ronda-booking-hours" aria-hidden="true">
             {HOUR_PERIODS.map((period) => <div key={period.label} className="ronda-booking-hour-row">
@@ -62,7 +63,6 @@ export function BookingSkeleton() {
               </div>
             </div>)}
           </div>
-          <p className="ronda-booking-hours-key" aria-hidden="true"><span className="ronda-booking-placeholder is-line" /></p>
         </section>
 
         <section className="ronda-booking-ticket" aria-labelledby="ronda-ticket-title">

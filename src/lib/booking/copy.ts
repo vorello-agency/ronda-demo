@@ -1,6 +1,6 @@
 import { courts } from "../../data/courts.ts";
-import type { Alternative, Notice } from "./conflicts.ts";
-import { HORIZON_DAYS, today, weekday, type Hour, type IsoDate } from "./club-time.ts";
+import type { Alternative, Change, Notice, Outcome } from "./conflicts.ts";
+import { CLUB_TIME_ZONE, HORIZON_DAYS, SLOT_MINUTES, today, weekday, type Hour, type IsoDate } from "./club-time.ts";
 import type { Correction } from "./selection.ts";
 import type { CourtId } from "./types.ts";
 
@@ -60,7 +60,7 @@ export function noticeText(notice: Notice): string {
     case "hour-expired":
       return notice.reason === "past"
         ? `El turno de las ${formatHour(notice.hour)} ya empezó. Elegí otro horario.`
-        : `Las ${formatHour(notice.hour)} dejaron de estar libres. Elegí otro horario.`;
+        : `A las ${formatHour(notice.hour)} ya no queda lugar. Elegí otro horario.`;
   }
 }
 
@@ -80,5 +80,94 @@ export function correctionText(correction: Correction): string {
       return correction.reason === "past"
         ? `El turno de las ${formatHour(correction.hour)} del enlace ya empezó. Elegí otro horario.`
         : `El horario de las ${formatHour(correction.hour)} del enlace no está disponible${correction.court ? ` en ${courtName(correction.court)}` : ""}. Elegí otro.`;
+  }
+}
+
+/* ---- Etiquetas y anuncios del flujo interactivo ---- */
+
+type HourOptionLike = { hour: Hour; free: readonly CourtId[]; tone: "free" | "alt" | "full" };
+type CourtOptionLike = { id: CourtId; state: "idle" | "free" | "taken"; selected: boolean; freeHours: number };
+
+const surfaceOf = (id: CourtId) => courts.find((court) => court.id === id)?.surface ?? "";
+
+/** Nombre accesible de un horario: el rango y qué canchas tienen lugar. */
+export function hourOptionLabel(option: HourOptionLike, selectedCourt: CourtId | null): string {
+  const range = formatRange(option.hour);
+  if (option.tone === "full") return `${range}. Completo: ninguna cancha tiene lugar.`;
+  const names = joinList(option.free.map(courtName));
+  if (option.tone === "alt" && selectedCourt) return `${range}. ${courtName(selectedCourt)} está ocupada; libre en ${names}. Elegilo para ver alternativas.`;
+  return `${range}. ${option.free.length} de ${courts.length} canchas libres: ${names}.`;
+}
+
+/**
+ * Texto bajo el número de un horario. Solo habla cuando ayuda a decidir: nada si todas las canchas tienen lugar,
+ * «1 libre» o «2 libres» si quedan pocas, «otra cancha» si la elegida está ocupada pero otra no, y «completo».
+ */
+export function hourCountText(option: HourOptionLike): string {
+  if (option.tone === "full") return "completo";
+  if (option.tone === "alt") return "otra cancha";
+  if (option.free.length === courts.length) return "";
+  return `${option.free.length} ${option.free.length === 1 ? "libre" : "libres"}`;
+}
+
+/*
+ * Vocabulario: «libre» siempre describe una cancha («2 libres» bajo un horario son canchas). Lo que se cuenta
+ * por cancha son «turnos», como en «Tu turno».
+ */
+const turns = (count: number) => `${count} ${count === 1 ? "turno" : "turnos"}`;
+
+/** Línea de estado visible bajo el nombre de la cancha. */
+export function courtStatusText(option: CourtOptionLike): string {
+  if (option.selected) return "Elegida";
+  if (option.state === "free") return "Libre";
+  if (option.state === "taken") return "Ocupada";
+  return `${surfaceOf(option.id)} · ${turns(option.freeHours)}`;
+}
+
+/** Nombre accesible de una cancha: nombre, número, superficie, si está elegida y su disponibilidad. */
+export function courtOptionLabel(option: CourtOptionLike, hour: Hour | null): string {
+  const availability = option.state === "idle"
+    ? `${turns(option.freeHours)} ${option.freeHours === 1 ? "disponible" : "disponibles"}`
+    : `${option.state === "free" ? "Libre" : "Ocupada"} a las ${formatHour(hour as Hour)}`;
+  return `${courtName(option.id)}, cancha ${option.id}, ${surfaceOf(option.id).toLowerCase()}. ${option.selected ? "Elegida. " : ""}${availability}.`;
+}
+
+/** El aviso y sus alternativas, para el anuncio de lectores de pantalla. */
+export function noticeAnnouncement(notice: Notice): string {
+  const alternatives = "alternatives" in notice ? notice.alternatives : [];
+  if (alternatives.length === 0) return noticeText(notice);
+  const labels = alternatives.map(alternativeLabel);
+  const options = labels.length < 2 ? labels.join("") : `${labels.slice(0, -1).join(", ")} o ${labels[labels.length - 1]}`;
+  return `${noticeText(notice)} ${labels.length === 1 ? "Alternativa" : "Alternativas"}: ${options}.`;
+}
+
+/** Qué se anuncia después de cada cambio. */
+export function changeAnnouncement(change: Change, outcome: Outcome): string {
+  if (outcome.notice) return noticeAnnouncement(outcome.notice);
+  switch (change.type) {
+    case "date": return `Disponibilidad del ${longDayLabel(change.date)}.`;
+    case "court": return `${courtName(change.court)} elegida.`;
+    case "hour": return `Horario de las ${formatHour(change.hour)} elegido.`;
+    case "pick": return `Elegiste ${courtName(change.court)} a las ${formatHour(change.hour)}.`;
+  }
+}
+
+/** Duración de los turnos, junto a «¿A qué hora?». */
+export const SLOT_LENGTH_TEXT = `Turnos de ${SLOT_MINUTES} minutos`;
+
+const wallClock = (nowMs: number, timeZone: string) =>
+  new Intl.DateTimeFormat("es-UY", { timeZone, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }).format(nowMs);
+
+/**
+ * «En el club son las 10:40», solo si el reloj de quien visita marca otra hora. Explica por qué faltan horarios
+ * de hoy sin nombrar una ciudad que la landing no menciona. Sin zona conocida o válida, no dice nada.
+ */
+export function clubTimeNote(nowMs: number, visitorTimeZone: string | undefined): string | null {
+  if (!visitorTimeZone) return null;
+  try {
+    const club = wallClock(nowMs, CLUB_TIME_ZONE);
+    return wallClock(nowMs, visitorTimeZone) === club ? null : `En el club son las ${club}`;
+  } catch {
+    return null;
   }
 }

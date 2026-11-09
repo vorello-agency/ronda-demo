@@ -25,11 +25,24 @@
 /* Cinta de días */
 .ronda-booking-days { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: end; gap: 28px; padding: clamp(36px, 3.6vw, 56px) var(--gutter) 0; }
 .ronda-booking-month { min-width: 96px; padding-bottom: 16px; }
+.ronda-booking-month .eyebrow { letter-spacing: .26em; white-space: nowrap; }
 .ronda-booking-placeholder.is-month { width: 96px; height: 14px; }
 .ronda-booking-day-list { display: flex; gap: 2px; overflow-x: auto; scrollbar-width: none; scroll-snap-type: x proximity; }
 .ronda-booking-day-list::-webkit-scrollbar { display: none; }
 .ronda-booking-day { flex: 0 0 auto; display: grid; justify-items: center; align-content: start; gap: 6px; width: 66px; height: 80px; padding: 12px 0; scroll-snap-align: start; }
 .ronda-booking-placeholder.is-weekday { width: 28px; height: 12px; }
+/* position: relative contiene el texto para lectores de pantalla dentro de la cinta desplazable. */
+button.ronda-booking-day { position: relative; border: 0; background: none; color: inherit; font: inherit; text-align: center; transition: background 160ms ease, color 160ms ease; }
+.ronda-booking-day-weekday { display: block; font-size: 11px; font-weight: 500; line-height: 14px; letter-spacing: .16em; text-transform: uppercase; color: var(--color-ink); }
+.ronda-booking-day.is-weekend .ronda-booking-day-weekday { color: var(--color-cobalt); }
+.ronda-booking-day-number { display: block; font-family: var(--font-display); font-size: 36px; line-height: 1; color: var(--color-cobalt); }
+button.ronda-booking-day:hover .ronda-booking-day-number { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; }
+.ronda-booking-day[aria-pressed="true"] { background: var(--color-cobalt); }
+.ronda-booking-day[aria-pressed="true"] .ronda-booking-day-weekday, .ronda-booking-day[aria-pressed="true"] .ronda-booking-day-number { color: var(--color-mineral); }
+.ronda-booking-day[aria-pressed="true"]:hover .ronda-booking-day-number { text-decoration: none; }
+.ronda-booking-day[aria-disabled="true"] { cursor: default; }
+.ronda-booking-day[aria-disabled="true"] .ronda-booking-day-weekday, .ronda-booking-day[aria-disabled="true"] .ronda-booking-day-number { color: var(--ronda-muted); text-decoration: line-through; text-decoration-thickness: 2px; }
+.ronda-booking-day:focus-visible { outline-offset: -2px; }
 .ronda-booking-placeholder.is-day { width: 38px; height: 36px; }
 
 /* Escenario: plano protagonista, horarios y resumen */
@@ -38,7 +51,8 @@
 .ronda-booking-where, .ronda-booking-side { min-width: 0; }
 .ronda-booking-panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; margin-bottom: 18px; }
 .ronda-booking-question { margin: 0; font-size: clamp(22px, 1.7vw, 28px); font-weight: 500; line-height: 1.25; letter-spacing: -.035em; color: var(--color-ink); }
-.ronda-booking-meta { margin: 0; font-size: 13px; color: var(--ronda-muted); }
+.ronda-booking-meta { margin: 0; font-size: 13px; color: var(--ronda-muted); text-align: right; }
+.ronda-booking-meta-note { display: block; }
 .ronda-booking-placeholder.is-meta { width: 88px; height: 12px; }
 
 /* Plano. La paleta arquitectónica vive solo acá. */
@@ -121,6 +135,32 @@
 .ronda-plan-tag-number { display: inline-grid; place-items: center; min-width: 46px; height: 42px; padding: 0 6px; font-family: var(--font-display); font-size: 30px; line-height: 1; color: var(--color-cobalt); }
 .ronda-plan-tag-name { font-size: 18px; font-weight: 500; line-height: 1.3; letter-spacing: -.02em; }
 .ronda-plan-tag-status { font-size: 13px; line-height: 1.4; color: var(--ronda-muted); }
+button.ronda-plan-tag { border: 0; background: none; font: inherit; }
+.ronda-plan-tag-number { transition: background 160ms ease; }
+.ronda-plan-tag[aria-pressed="true"] .ronda-plan-tag-number { background: var(--color-citron); color: var(--color-ink); }
+.ronda-plan-tag[aria-pressed="true"] .ronda-plan-tag-name { font-weight: 700; }
+.ronda-plan-tag[aria-pressed="true"] .ronda-plan-tag-status { color: var(--color-ink); font-weight: 500; }
+.ronda-plan-tag.is-taken .ronda-plan-tag-name { text-decoration: line-through; text-decoration-thickness: 1px; }
+.ronda-plan-tag.is-taken .ronda-plan-tag-status { color: var(--color-ink); }
+button.ronda-plan-tag:hover .ronda-plan-tag-name { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
+button.ronda-plan-tag:focus-visible { outline-offset: 2px; }
+
+/* Plano y etiquetas se señalan entre sí al pasar o enfocar (solo CSS). El dibujo es un atajo para puntero. */
+.ronda-plan[data-interactive] .ronda-plan-court { cursor: pointer; }
+.ronda-plan:has([data-court-id="01"]:hover) [data-court-tag="01"] .ronda-plan-tag-name,
+.ronda-plan:has([data-court-id="02"]:hover) [data-court-tag="02"] .ronda-plan-tag-name,
+.ronda-plan:has([data-court-id="03"]:hover) [data-court-tag="03"] .ronda-plan-tag-name { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
+.ronda-plan[data-interactive] [data-court-id]:hover .c-ring,
+.ronda-plan:has([data-court-tag="01"]:hover) [data-court-id="01"] .c-ring,
+.ronda-plan:has([data-court-tag="02"]:hover) [data-court-id="02"] .c-ring,
+.ronda-plan:has([data-court-tag="03"]:hover) [data-court-id="03"] .c-ring { stroke: var(--color-cobalt); stroke-dasharray: 4 4; }
+.ronda-plan:has([data-court-tag="01"]:focus-visible) [data-court-id="01"] .c-ring,
+.ronda-plan:has([data-court-tag="02"]:focus-visible) [data-court-id="02"] .c-ring,
+.ronda-plan:has([data-court-tag="03"]:focus-visible) [data-court-id="03"] .c-ring { stroke: var(--color-cobalt); stroke-dasharray: none; }
+/* La cancha elegida conserva su anillo de tinta aunque se pase o se enfoque. */
+.ronda-plan[data-court="01"] [data-court-id="01"] .c-ring,
+.ronda-plan[data-court="02"] [data-court-id="02"] .c-ring,
+.ronda-plan[data-court="03"] [data-court-id="03"] .c-ring { stroke: var(--color-ink); stroke-dasharray: none; }
 
 /* Horarios. La grilla tiene seis columnas (la franja más larga) que se achican con el panel, sin desbordar. */
 .ronda-booking-hours { display: grid; gap: 22px; }
@@ -128,10 +168,45 @@
 .ronda-booking-period { padding-top: 12px; font-size: 11px; font-weight: 500; letter-spacing: .22em; text-transform: uppercase; color: var(--ronda-muted); }
 .ronda-booking-hour-list { --hour-width: 66px; display: grid; grid-template-columns: repeat(6, minmax(0, var(--hour-width))); gap: 2px; }
 .ronda-booking-hour { display: grid; align-content: center; justify-items: center; gap: 6px; min-width: 0; height: 76px; }
-.ronda-booking-placeholder.is-hour { width: min(38px, 70%); height: 30px; }
+.ronda-booking-placeholder.is-hour { width: min(34px, 70%); height: 26px; }
+button.ronda-booking-hour { border: 0; background: none; color: inherit; font: inherit; transition: background 160ms ease, color 160ms ease; }
+/* Un escalón por debajo de los días y del resumen, para que manden el día elegido y «Tu turno». */
+.ronda-booking-hour-number { font-family: var(--font-display); font-size: 28px; line-height: 1; color: var(--color-cobalt); }
+/*
+ * El renglón del texto se reserva aunque esté vacío, así los números quedan alineados en la fila. «otra cancha» no
+ * entra en ninguna celda (68 px): va siempre en dos renglones y el segundo ocupa el margen inferior de la celda.
+ * La altura es fija en px (no en em) para que «completo», más chico, no corra el número.
+ */
+.ronda-booking-hour-count { max-width: 100%; height: 13px; font-size: 12px; font-weight: 500; line-height: 13px; letter-spacing: .02em; color: var(--color-ink); text-align: center; overflow-wrap: anywhere; }
+button.ronda-booking-hour:is(.is-free, .is-alt):hover .ronda-booking-hour-number { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 6px; }
+.ronda-booking-hour.is-alt .ronda-booking-hour-count { width: min-content; overflow-wrap: normal; color: var(--color-cobalt); }
+.ronda-booking-hour.is-full { cursor: default; }
+.ronda-booking-hour.is-full .ronda-booking-hour-number { color: var(--ronda-muted); text-decoration: line-through; text-decoration-thickness: 2px; }
+.ronda-booking-hour.is-full .ronda-booking-hour-count { color: var(--ronda-muted); font-size: 11px; }
+.ronda-booking-hour[aria-pressed="true"] { background: var(--color-cobalt); }
+.ronda-booking-hour[aria-pressed="true"] .ronda-booking-hour-number { color: var(--color-mineral); text-decoration: none; }
+.ronda-booking-hour[aria-pressed="true"] .ronda-booking-hour-count { color: var(--color-mineral); }
+.ronda-booking-hour:focus-visible { outline-offset: -2px; }
+.ronda-booking-empty { margin: 0; font-size: 16px; line-height: 1.5; }
+
+/* Vista previa: sin horario elegido, pasar o enfocar un horario raya en el plano las canchas sin lugar. */
+.ronda-booking-stage:not(:has(.ronda-booking-hour[aria-pressed="true"])):has(.ronda-booking-hour[data-busy~="01"]:is(:hover, :focus-visible)) [data-court-id="01"] .c-hatch,
+.ronda-booking-stage:not(:has(.ronda-booking-hour[aria-pressed="true"])):has(.ronda-booking-hour[data-busy~="02"]:is(:hover, :focus-visible)) [data-court-id="02"] .c-hatch,
+.ronda-booking-stage:not(:has(.ronda-booking-hour[aria-pressed="true"])):has(.ronda-booking-hour[data-busy~="03"]:is(:hover, :focus-visible)) [data-court-id="03"] .c-hatch { opacity: 1; }
+.ronda-booking-stage:not(:has(.ronda-booking-hour[aria-pressed="true"])):has(.ronda-booking-hour[data-busy~="01"]:is(:hover, :focus-visible)) [data-court-id="01"] .c-veil,
+.ronda-booking-stage:not(:has(.ronda-booking-hour[aria-pressed="true"])):has(.ronda-booking-hour[data-busy~="02"]:is(:hover, :focus-visible)) [data-court-id="02"] .c-veil,
+.ronda-booking-stage:not(:has(.ronda-booking-hour[aria-pressed="true"])):has(.ronda-booking-hour[data-busy~="03"]:is(:hover, :focus-visible)) [data-court-id="03"] .c-veil { opacity: .55; }
 .ronda-booking-placeholder.is-count { width: 22px; height: 10px; }
-.ronda-booking-hours-key { margin: 12px 0 0 96px; max-width: 46ch; font-size: 13px; line-height: 1.45; color: var(--ronda-muted); }
-.ronda-booking-placeholder.is-line { width: min(300px, 100%); height: 12px; margin-block: 3px; }
+
+/* Aviso de conflicto: qué se conservó, qué se liberó y alternativas de un toque. */
+.ronda-booking-notice { display: grid; gap: 12px; margin-top: 24px; padding: 18px 22px 20px; background: var(--color-citron); color: var(--color-ink); }
+.ronda-booking-notice p { margin: 0; font-size: 17px; line-height: 1.4; }
+.ronda-booking-notice-options { display: flex; flex-wrap: wrap; gap: 8px 28px; }
+.ronda-booking-notice-options button { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0; border: 0; border-bottom: 1px solid var(--color-ink); background: none; color: inherit; font: inherit; font-size: 16px; font-weight: 500; }
+.ronda-booking-notice-options button:hover svg { transform: translateX(3px); }
+.ronda-booking-notice-options svg { transition: transform 240ms var(--ease-out); }
+.ronda-booking-notice-options button:focus-visible { outline-color: var(--color-ink); outline-offset: 3px; }
+.ronda-booking-correction { margin: 24px var(--gutter) 0; padding: 14px 18px; max-width: 64ch; background: var(--color-citron); font-size: 15px; line-height: 1.5; }
 
 /* Resumen («Tu turno») */
 .ronda-booking-ticket { margin-top: clamp(40px, 3.6vw, 56px); padding-top: 26px; border-top: 1px solid var(--rule); }
@@ -139,6 +214,10 @@
 .ronda-booking-summary-item { display: grid; gap: 8px; min-height: 44px; padding: 2px 0; }
 .ronda-booking-summary-label { font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--ronda-muted); }
 .ronda-booking-placeholder.is-value { width: 96px; height: clamp(34px, 2.8vw, 46px); }
+button.ronda-booking-summary-item { border: 0; background: none; color: inherit; font: inherit; text-align: left; }
+.ronda-booking-summary-value { display: flex; align-items: flex-end; height: clamp(34px, 2.8vw, 46px); font-family: var(--font-display); font-size: clamp(34px, 2.8vw, 46px); line-height: 1; letter-spacing: -.02em; text-transform: uppercase; color: var(--color-cobalt); white-space: nowrap; }
+.ronda-booking-summary-item.is-empty .ronda-booking-summary-value { font-family: var(--font-body); font-size: 19px; line-height: 1.5; letter-spacing: -.02em; text-transform: none; color: var(--ronda-muted); }
+button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 7px; }
 .ronda-booking-summary-caption { margin: 12px 0 0; font-size: 14px; line-height: 1.5; }
 .ronda-booking-placeholder.is-caption { width: 180px; height: 12px; margin-block: 4px; }
 .ronda-booking-fine { margin: 14px 0 0; font-size: 13px; line-height: 1.5; color: var(--ronda-muted); }
@@ -153,7 +232,10 @@
 @media (min-width: 1024px) {
   .ronda-booking-stage { grid-template-columns: minmax(0, 1.34fr) minmax(0, 1fr); }
   .ronda-booking-hour-row { grid-template-columns: 56px minmax(0, 1fr); gap: 6px; }
-  .ronda-booking-hours-key { margin-left: 62px; }
+}
+/* Planta en dos columnas: las celdas bajan a ~50 px y «completo» se ajusta para no salirse. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .ronda-booking-hour.is-full .ronda-booking-hour-count { font-size: 10px; letter-spacing: 0; }
 }
 
 /* Isométrico desde 1280 px: el plano gana ancho y el panel lateral se fija. */
@@ -161,6 +243,7 @@
   .ronda-booking-stage { grid-template-columns: minmax(0, 1fr) clamp(420px, 31vw, 470px); gap: clamp(40px, 4.4vw, 88px); }
   .ronda-booking-hour-list { --hour-width: clamp(54px, 4vw, 60px); }
   .ronda-booking-placeholder.is-value { height: clamp(30px, 2.5vw, 40px); }
+  .ronda-booking-summary-value { height: clamp(30px, 2.5vw, 40px); font-size: clamp(30px, 2.5vw, 40px); }
   .ronda-booking-summary { gap: 6px 28px; }
   .ronda-plan-view--plan { display: none; }
   .ronda-plan-view--iso { display: block; }
@@ -211,24 +294,39 @@
   .ronda-plan-tag-number { min-width: 40px; height: 36px; font-size: 26px; }
   .ronda-plan-tag-name { font-size: 16px; }
   .ronda-plan-tag-status { font-size: 12px; }
+  .ronda-plan-tag-sep { display: none; }
+  .ronda-plan-tag-count { display: block; }
   .ronda-booking-hours { gap: 18px; }
   .ronda-booking-hour-row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
   .ronda-booking-period { padding-top: 0; font-size: 10px; }
   .ronda-booking-hour-list { grid-template-columns: repeat(6, minmax(0, 1fr)); }
   .ronda-booking-hour { height: 70px; }
-  .ronda-booking-placeholder.is-hour { height: 26px; }
-  .ronda-booking-hours-key { margin-left: 0; font-size: 12px; }
+  .ronda-booking-placeholder.is-hour { height: 22px; }
+  .ronda-booking-hour-number { font-size: 24px; }
+  .ronda-booking-hour.is-full .ronda-booking-hour-count { font-size: 10px; letter-spacing: 0; }
   .ronda-booking-ticket { margin-top: 40px; }
   .ronda-booking-summary { gap: 6px 22px; }
   .ronda-booking-placeholder.is-value { width: 80px; height: 30px; }
+  .ronda-booking-summary-value { height: 30px; font-size: 30px; }
+  .ronda-booking-summary-item.is-empty .ronda-booking-summary-value { font-size: 17px; }
+  .ronda-booking-notice { padding: 16px 18px; }
+  .ronda-booking-notice p { font-size: 16px; }
   .ronda-booking-footer { flex-direction: column; padding-bottom: 28px; }
 }
 
 @media (max-width: 360px) {
   /* Con marca y descriptor, la flecha decorativa no entra: el texto queda en una línea. */
   .ronda-booking-back svg { display: none; }
+  /* «¿A qué hora?» (127 px) y «En el club son las 10:40» entran lado a lado en 280 px sin partir la pregunta. */
+  .ronda-booking-panel-head { gap: 14px; }
+  .ronda-booking-meta { font-size: 12px; }
+  /* A 320 px la celda mide 45 px: «2 libres» baja a 11 px para no tocar la celda vecina y «completo» (45,1 px) se aprieta apenas. */
+  .ronda-booking-hour-count { font-size: 11px; letter-spacing: 0; }
+  .ronda-booking-hour.is-full .ronda-booking-hour-count { letter-spacing: -.02em; }
 }
 
 @media (forced-colors: active) {
   .ronda-booking-placeholder { background: GrayText; }
+  .ronda-booking-day[aria-pressed="true"], .ronda-booking-hour[aria-pressed="true"], .ronda-plan-tag[aria-pressed="true"] { outline: 3px solid Highlight; outline-offset: -3px; }
+  .ronda-booking-notice, .ronda-booking-correction { border: 1px solid CanvasText; }
 }

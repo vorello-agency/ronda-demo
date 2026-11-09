@@ -1,6 +1,9 @@
 @import "tailwindcss";
-/* El dibujo del plano usa el atributo SVG `transform`, que Tailwind tomaría como utilidad global. No usa utilidades. */
-@source not "../components/booking/club-plan-art.tsx";
+/* Reservas tiene su propia hoja (booking.css) y no usa utilidades. Sin escanearla, palabras del código como
+   `transform` (atributo SVG) o `block` (scrollIntoView) no se vuelven utilidades globales de la landing. */
+@source not "../components/booking";
+@source not "../lib/booking";
+@source inline("sr-only");
 
 @theme inline {
   --color-mineral: #eeece3;
