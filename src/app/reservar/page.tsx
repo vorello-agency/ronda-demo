@@ -6,6 +6,7 @@ import { BookingIntro } from "@/components/booking/booking-intro";
 import { BookingFlow } from "@/components/booking/booking-flow";
 import { BookingSkeleton } from "@/components/booking/booking-skeleton";
 import { ClubPlanArt } from "@/components/booking/club-plan-art";
+import { ClubWayfindingArt } from "@/components/booking/club-wayfinding-art";
 import "@/components/booking/booking.css";
 
 // Solo título y descripción: `openGraph`, `robots` y el resto se heredan del layout raíz.
@@ -15,17 +16,18 @@ export const metadata: Metadata = {
 };
 
 export default function ReservarPage() {
-  // El dibujo se renderiza una vez en el servidor y se pasa al esqueleto y al flujo: no viaja en el JavaScript del cliente.
+  // Los dibujos y la apertura se renderizan una vez en el servidor y se pasan al esqueleto y al flujo: no viajan en el
+  // JavaScript del cliente. La apertura va dentro del flujo porque la confirmación la reemplaza por su propio título.
   const art = <ClubPlanArt />;
-  const skeleton = <BookingSkeleton art={art} />;
+  const intro = <BookingIntro />;
+  const skeleton = <>{intro}<BookingSkeleton art={art} /></>;
   return <div className="ronda-booking">
     <a className="skip-link" href="#contenido">Saltar al contenido</a>
     <BookingHeader />
     <main id="contenido" tabIndex={-1}>
-      <BookingIntro />
       {/* useSearchParams en una ruta estática: el flujo se monta en el cliente y el esqueleto ocupa su lugar hasta entonces. */}
       <Suspense fallback={skeleton}>
-        <BookingFlow art={art} fallback={skeleton} />
+        <BookingFlow art={art} intro={intro} wayfinding={<ClubWayfindingArt />} fallback={skeleton} />
       </Suspense>
     </main>
     <BookingFooter />

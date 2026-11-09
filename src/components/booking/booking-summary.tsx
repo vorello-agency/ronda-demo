@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowRightIcon } from "@phosphor-icons/react";
 import { courts } from "@/data/courts";
 import { SLOT_MINUTES, weekday } from "@/lib/booking/club-time";
 import { WEEKDAYS_SHORT, formatHour, formatRange } from "@/lib/booking/copy";
@@ -7,8 +8,13 @@ import type { Selection } from "@/lib/booking/types";
 
 export type SummaryTarget = "court" | "date" | "hour";
 
-/** «Tu turno»: una línea con cancha, día y hora. Cada dato lleva al control que lo cambia. */
-export function BookingSummary({ selection, onJump }: { selection: Selection; onJump: (target: SummaryTarget) => void }) {
+type Props = { selection: Selection; onJump: (target: SummaryTarget) => void; onConfirm: () => void };
+
+/**
+ * «Tu turno»: una línea con cancha, día y hora. Cada dato lleva al control que lo cambia.
+ * Con cancha y hora elegidas aparece la acción principal: confirmar la reserva simulada.
+ */
+export function BookingSummary({ selection, onJump, onConfirm }: Props) {
   const court = courts.find((item) => item.id === selection.court);
   const day = `${WEEKDAYS_SHORT[weekday(selection.date)]} ${selection.date.slice(8, 10)}`;
   const hour = selection.hour === null ? null : formatHour(selection.hour);
@@ -34,6 +40,9 @@ export function BookingSummary({ selection, onJump }: { selection: Selection; on
       </button>)}
     </div>
     <p className="ronda-booking-summary-caption">{details || `Turno de ${SLOT_MINUTES} minutos`}</p>
+    {court && hour && <button type="button" className="button ronda-booking-confirm" onClick={onConfirm}>
+      Confirmar reserva simulada <ArrowRightIcon size={20} weight="light" aria-hidden="true" />
+    </button>}
     <p className="ronda-booking-fine">Simulación: no se reserva la cancha ni se cobra nada.</p>
   </section>;
 }

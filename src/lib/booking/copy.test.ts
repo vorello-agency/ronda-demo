@@ -81,7 +81,7 @@ describe("textos de avisos y correcciones", () => {
   });
 
   it("los avisos de conflicto dicen qué se conservó y qué se liberó", () => {
-    assert.equal(noticeText(notices[0]), "Central está ocupada a las 19:00. Mantuvimos la cancha y liberamos el horario.");
-    assert.equal(noticeText(notices[1]), "A las 19:00 Central está ocupada. Mantuvimos el horario y liberamos la cancha.");
+    assert.equal(noticeText(notices[0]), "Central está ocupada a las 19:00. Elegí otro horario para Central.");
+    assert.equal(noticeText(notices[1]), "Central está ocupada a las 19:00. Elegí otra cancha para ese horario.");
   });
 });

@@ -2,13 +2,16 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
-import { SLOT_LENGTH_TEXT, WEEKDAYS_LONG, changeAnnouncement, clubTimeNote, correctionText, formatHour, noticeAnnouncement } from "@/lib/booking/copy";
+import { confirmSelection } from "@/lib/booking/bookings";
+import { SLOT_LENGTH_TEXT, WEEKDAYS_LONG, barText, changeAnnouncement, clubTimeNote, confirmFailedText, correctionText, formatHour, noticeAnnouncement } from "@/lib/booking/copy";
 import { applyChange, revalidate, type Alternative, type Change, type Notice } from "@/lib/booking/conflicts";
 import { today, weekday, type Hour, type IsoDate } from "@/lib/booking/club-time";
 import { courtOptions, dayOptions, hourPeriods, noticeOrigin } from "@/lib/booking/flow-view";
 import { planStateAttributes } from "@/lib/booking/plan-state";
 import { canonicalSearch, parseSelection, type Correction, type ParamReader } from "@/lib/booking/selection";
 import type { Booking, Selection } from "@/lib/booking/types";
+import { BookingBar } from "./booking-bar";
+import { BookingConfirmation } from "./booking-confirmation";
 import { BookingNotice } from "./booking-notice";
 import { BookingSummary, type SummaryTarget } from "./booking-summary";
 import { CourtPlan } from "./court-plan";
@@ -24,35 +27,43 @@ type FlowState = {
   notice: { notice: Notice; origin: Origin } | null;
   corrections: Correction[];
   announcement: { text: string; id: number };
+  /** Reservas simuladas de esta visita. Viven en memoria: al recargar, la página vuelve a empezar. */
+  bookings: readonly Booking[];
+  /** Turno recién confirmado: mientras exista, se muestra la confirmación en lugar del flujo. */
+  confirmed: Booking | null;
 };
 
-/** Las reservas confirmadas llegan en E3; hasta entonces el contexto no tiene ninguna. */
-const NO_BOOKINGS: readonly Booking[] = [];
+type Art = { art: ReactNode; intro: ReactNode; wayfinding: ReactNode };
 
 function initialState(params: ParamReader, nowMs: number): FlowState {
-  const { selection, corrections, dateExplicit } = parseSelection(params, nowMs, NO_BOOKINGS);
-  return { selection, pinDate: dateExplicit, notice: null, corrections, announcement: { text: "", id: 0 } };
+  const { selection, corrections, dateExplicit } = parseSelection(params, nowMs);
+  return { selection, pinDate: dateExplicit, notice: null, corrections, announcement: { text: "", id: 0 }, bookings: [], confirmed: null };
 }
 
 /**
  * Única frontera interactiva de la página. Lee «ahora» del reloj por minuto; sin reloj (servidor) muestra
- * el esqueleto. Los dibujos llegan del servidor como `art` y no se vuelven a renderizar.
+ * el esqueleto. Los dibujos y la apertura llegan del servidor (`art`, `wayfinding`, `intro`) y no se vuelven
+ * a renderizar en el cliente.
  */
-export function BookingFlow({ art, fallback }: { art: ReactNode; fallback: ReactNode }) {
+export function BookingFlow({ fallback, ...server }: Art & { fallback: ReactNode }) {
   const nowMs = useClubNow();
   if (nowMs === null) return fallback;
-  return <Flow art={art} nowMs={nowMs} />;
+  return <Flow {...server} nowMs={nowMs} />;
 }
 
-function Flow({ art, nowMs }: { art: ReactNode; nowMs: number }) {
+function Flow({ art, intro, wayfinding, nowMs }: Art & { nowMs: number }) {
   const params = useSearchParams();
   const root = useRef<HTMLDivElement>(null);
+  const confirmTitle = useRef<HTMLHeadingElement>(null);
   // El estado se inicializa una sola vez desde la URL; después, la URL solo refleja el estado.
   const [state, setState] = useState(() => initialState(params, nowMs));
-  const ctx = { nowMs, bookings: NO_BOOKINGS };
+  // Se asume visible hasta que el observador diga lo contrario: así la barra no aparece un instante al cargar.
+  const [ticketVisible, setTicketVisible] = useState(true);
+  const ctx = { nowMs, bookings: state.bookings };
 
   // La selección efectiva se deriva en cada render: si con la página abierta vence el horario o el día, se corrige y se avisa.
-  const checked = revalidate(state.selection, ctx);
+  // Con la confirmación a la vista no se revalida: el turno propio ya no está «libre» y no hay nada que corregir.
+  const checked = state.confirmed ? { selection: state.selection, notice: null } : revalidate(state.selection, ctx);
   const selection = checked.selection;
   const notice = checked.notice ? { notice: checked.notice, origin: "hour" as const } : state.notice;
   const announcement = checked.notice ? { text: noticeAnnouncement(checked.notice), id: -1 } : state.announcement;
@@ -63,6 +74,30 @@ function Flow({ art, nowMs }: { art: ReactNode; nowMs: number }) {
     if (window.location.search !== next) window.history.replaceState(null, "", `${window.location.pathname}${next}`);
   }, [search]);
 
+  // Al confirmar, el foco va al título de la confirmación; al volver con «Hacer otra reserva», al título de la página.
+  const shown = useRef(state.confirmed);
+  useEffect(() => {
+    if (shown.current === state.confirmed) return;
+    shown.current = state.confirmed;
+    const target = state.confirmed ? confirmTitle.current : document.getElementById("ronda-booking-title");
+    target?.focus({ preventScroll: true });
+    // La vista cambia entera: se muestra desde arriba, sin animar. Se repite en el cuadro siguiente porque el anclaje
+    // de scroll del navegador puede correrla unos px al terminar de maquetar la vista nueva.
+    const top = () => window.scrollTo({ top: 0, behavior: "instant" });
+    top();
+    const frame = requestAnimationFrame(top);
+    return () => cancelAnimationFrame(frame);
+  }, [state.confirmed]);
+
+  // La barra fija acompaña solo mientras «Tu turno» está fuera de la pantalla.
+  useEffect(() => {
+    const ticket = root.current?.querySelector(".ronda-booking-ticket");
+    if (!ticket) return;
+    const observer = new IntersectionObserver(([entry]) => setTicketVisible(entry.isIntersecting), { rootMargin: "0px 0px -8px 0px" });
+    observer.observe(ticket);
+    return () => observer.disconnect();
+  }, [state.confirmed]);
+
   function change(next: Change, origin: Origin = next.type === "court" ? "court" : "hour") {
     const outcome = applyChange(selection, next, ctx);
     setState((previous) => ({
@@ -71,8 +106,35 @@ function Flow({ art, nowMs }: { art: ReactNode; nowMs: number }) {
       notice: outcome.notice ? { notice: outcome.notice, origin: noticeOrigin(outcome.notice, origin) } : null,
       corrections: [],
       announcement: { text: changeAnnouncement(next, outcome), id: previous.announcement.id + 1 },
+      bookings: previous.bookings,
+      confirmed: null,
     }));
     return outcome;
+  }
+
+  /** Confirma contra las reservas del estado anterior: un doble toque devuelve el mismo turno, sin duplicarlo. */
+  function confirm() {
+    setState((previous) => {
+      const result = confirmSelection(selection, { nowMs, bookings: previous.bookings });
+      if (!result.ok) return { ...previous, announcement: { text: confirmFailedText(selection), id: previous.announcement.id + 1 } };
+      return { ...previous, selection, bookings: result.bookings, confirmed: result.booking, notice: null, corrections: [], announcement: { text: "", id: previous.announcement.id + 1 } };
+    });
+  }
+
+  /** «Hacer otra reserva»: conserva el día y vuelve a empezar con cancha y hora. */
+  function again() {
+    setState((previous) => ({
+      ...previous,
+      selection: { date: previous.selection.date, court: null, hour: null },
+      confirmed: null,
+      notice: null,
+      announcement: { text: "", id: previous.announcement.id + 1 },
+    }));
+  }
+
+  /** «Revisar» en la barra: lleva a «Tu turno» y deja el foco en la confirmación. */
+  function review() {
+    focusIn(".ronda-booking-confirm", true);
   }
 
   function pick(alternative: Alternative, origin: Origin) {
@@ -93,13 +155,21 @@ function Flow({ art, nowMs }: { art: ReactNode; nowMs: number }) {
     else focusIn('.ronda-booking-hour[aria-pressed="true"], .ronda-booking-hour:not(.is-full)', true);
   }
 
+  const status = <p className="sr-only" role="status"><span key={announcement.id}>{announcement.text}</span></p>;
+  if (state.confirmed) return <>
+    {status}
+    <BookingConfirmation booking={state.confirmed} wayfinding={wayfinding} titleRef={confirmTitle} onAgain={again} />
+  </>;
+
   const periods = hourPeriods(selection, ctx);
   // Solo si quien visita está en otra zona horaria: explica por qué faltan horarios de hoy.
   const clubNote = clubTimeNote(nowMs, Intl.DateTimeFormat().resolvedOptions().timeZone);
   const courtsNow = courtOptions(selection, ctx);
 
-  return <div className="ronda-booking-flow" ref={root}>
-    <p className="sr-only" role="status"><span key={announcement.id}>{announcement.text}</span></p>
+  const bar = barText(selection, nowMs);
+
+  return <>{intro}<div className="ronda-booking-flow" ref={root}>
+    {status}
 
     <DayRibbon days={dayOptions(nowMs)} selected={selection.date} onSelect={(date) => change({ type: "date", date })} />
 
@@ -136,10 +206,12 @@ function Flow({ art, nowMs }: { art: ReactNode; nowMs: number }) {
           <HourPicker periods={periods} selectedHour={selection.hour} selectedCourt={selection.court} onSelect={(hour) => change({ type: "hour", hour })} />
           {notice?.origin === "hour" && <BookingNotice notice={notice.notice} onPick={(alternative) => pick(alternative, "hour")} />}
         </section>
-        <BookingSummary selection={selection} onJump={jump} />
+        <BookingSummary selection={selection} onJump={jump} onConfirm={confirm} />
       </div>
     </div>
-  </div>;
+
+    <BookingBar text={bar} visible={!ticketVisible} complete={selection.court !== null && selection.hour !== null} onReview={review} />
+  </div></>;
 }
 
 /** Qué momento muestra el plano: el día entero o la hora elegida. */

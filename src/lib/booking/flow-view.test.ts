@@ -141,7 +141,7 @@ describe("avisos y anuncios", () => {
 
   it("el anuncio de un conflicto incluye las alternativas", () => {
     const text = noticeAnnouncement({ kind: "court-busy", court: "01", hour: 19, alternatives: [{ court: "01", hour: 20 }, { court: "02", hour: 19 }] });
-    assert.equal(text, "Central está ocupada a las 19:00. Mantuvimos la cancha y liberamos el horario. Alternativas: Central a las 20:00 o Jardín a las 19:00.");
+    assert.equal(text, "Central está ocupada a las 19:00. Elegí otro horario para Central. Alternativas: Central a las 20:00 o Jardín a las 19:00.");
     assert.match(noticeAnnouncement({ kind: "hour-busy", court: "01", hour: 19, alternatives: [{ court: "02", hour: 19 }] }), /Alternativa: Jardín a las 19:00\.$/);
   });
 

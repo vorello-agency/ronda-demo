@@ -1,4 +1,4 @@
-import { COURT_IDS, freeHoursFor, hourAvailability, isFree } from "./availability.ts";
+import { COURT_IDS, freeHoursFor, hourAvailability, slotStatus } from "./availability.ts";
 import { bookableHours, horizonDates, isWeekend, today, type Hour, type IsoDate } from "./club-time.ts";
 import { HOUR_PERIODS, MONTHS } from "./copy.ts";
 import type { Notice } from "./conflicts.ts";
@@ -55,13 +55,20 @@ export function hourPeriods(selection: Selection, ctx: Context): HourPeriod[] {
  * Estado de una cancha en el plano:
  *   «idle»   sin horario elegido: se muestra cuántos horarios libres le quedan en el día.
  *   «free» / «taken»   con horario elegido: si esa cancha tiene lugar a esa hora.
+ *   «yours»  con horario elegido: la persona ya la reservó en esta visita (no está libre, pero no es «ocupada»).
  */
-export type CourtOption = { id: CourtId; state: "idle" | "free" | "taken"; selected: boolean; freeHours: number };
+export type CourtOption = { id: CourtId; state: "idle" | "free" | "taken" | "yours"; selected: boolean; freeHours: number };
+
+function courtState(selection: Selection, id: CourtId, ctx: Context): CourtOption["state"] {
+  if (selection.hour === null) return "idle";
+  const status = slotStatus(selection.date, id, selection.hour, ctx);
+  return status === "free" ? "free" : status === "yours" ? "yours" : "taken";
+}
 
 export function courtOptions(selection: Selection, ctx: Context): CourtOption[] {
   return COURT_IDS.map((id) => ({
     id,
-    state: selection.hour === null ? "idle" : isFree(selection.date, id, selection.hour, ctx) ? "free" : "taken",
+    state: courtState(selection, id, ctx),
     selected: selection.court === id,
     freeHours: freeHoursFor(selection.date, id, ctx).length,
   }));

@@ -15,6 +15,8 @@
 .ronda-booking-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 30ch); align-items: end; gap: 48px; padding: clamp(36px, 4vw, 64px) var(--gutter) 0; }
 .ronda-booking-title { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(64px, 7.6vw, 140px); line-height: .9; letter-spacing: -.045em; text-transform: uppercase; color: var(--color-cobalt); overflow-wrap: break-word; }
 .ronda-booking-dot { color: var(--color-citron); }
+/* Los títulos reciben el foco por programa (al confirmar y al volver): no son controles, no llevan anillo. */
+.ronda-booking-title:focus, .ronda-confirm-title:focus { outline: none; }
 .ronda-booking-demo { margin: 0 0 10px; font-size: 15px; line-height: 1.55; }
 .ronda-booking-demo strong { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 500; letter-spacing: .28em; text-transform: uppercase; color: var(--color-cobalt); }
 .ronda-booking-noscript { margin: 24px var(--gutter) 0; padding: 16px 20px; max-width: 60ch; background: var(--color-citron); font-size: 16px; line-height: 1.5; }
@@ -142,6 +144,7 @@ button.ronda-plan-tag { border: 0; background: none; font: inherit; }
 .ronda-plan-tag[aria-pressed="true"] .ronda-plan-tag-status { color: var(--color-ink); font-weight: 500; }
 .ronda-plan-tag.is-taken .ronda-plan-tag-name { text-decoration: line-through; text-decoration-thickness: 1px; }
 .ronda-plan-tag.is-taken .ronda-plan-tag-status { color: var(--color-ink); }
+.ronda-plan-tag.is-yours .ronda-plan-tag-status { color: var(--color-ink); font-weight: 500; }
 button.ronda-plan-tag:hover .ronda-plan-tag-name { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 5px; }
 button.ronda-plan-tag:focus-visible { outline-offset: 2px; }
 
@@ -220,6 +223,7 @@ button.ronda-booking-summary-item { border: 0; background: none; color: inherit;
 button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 7px; }
 .ronda-booking-summary-caption { margin: 12px 0 0; font-size: 14px; line-height: 1.5; }
 .ronda-booking-placeholder.is-caption { width: 180px; height: 12px; margin-block: 4px; }
+.ronda-booking-confirm { margin-top: 24px; }
 .ronda-booking-fine { margin: 14px 0 0; font-size: 13px; line-height: 1.5; color: var(--ronda-muted); }
 
 /* Pie */
@@ -325,8 +329,103 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
   .ronda-booking-hour.is-full .ronda-booking-hour-count { letter-spacing: -.02em; }
 }
 
+/* Confirmación (diseño aprobado). Una columna hasta 1023 px; desde 1024, texto a la izquierda y foto a la derecha. */
+.ronda-confirm {
+  --confirm-rule: color-mix(in srgb, var(--color-mineral) 33%, transparent);
+  --confirm-soft: color-mix(in srgb, var(--color-mineral) 80%, var(--color-cobalt));
+  display: grid; grid-template-columns: minmax(0, 1fr); grid-template-areas: "head" "photo" "rest";
+  padding: 40px var(--gutter) clamp(72px, 7vw, 120px); background: var(--color-cobalt); color: var(--color-mineral);
+}
+.ronda-confirm .eyebrow { margin: 0; color: var(--color-mineral); }
+.ronda-confirm :focus-visible, .ronda-confirm .button:focus-visible { outline-color: var(--color-mineral); }
+.ronda-confirm-head { grid-area: head; }
+.ronda-confirm-title { margin: 18px 0 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(48px, 14.6vw, 100px); line-height: .92; letter-spacing: -.04em; text-transform: uppercase; overflow-wrap: break-word; }
+.ronda-confirm-photo { grid-area: photo; margin: 32px calc(-1 * var(--gutter)) 0; }
+.ronda-confirm-image { position: relative; aspect-ratio: 4 / 3; background: color-mix(in srgb, var(--color-mineral) 12%, var(--color-cobalt)); }
+.ronda-confirm-image img { object-fit: cover; }
+.ronda-confirm-photo figcaption { display: flex; align-items: center; gap: 14px; padding: 14px var(--gutter) 0; font-size: 13px; line-height: 1.4; }
+.ronda-confirm-badge { display: inline-grid; place-items: center; min-width: 36px; height: 32px; padding: 0 4px; background: var(--color-citron); color: var(--color-ink); font-family: var(--font-display); font-size: 17px; line-height: 1; }
+.ronda-confirm-rest { grid-area: rest; }
+.ronda-confirm-score { display: grid; grid-template-columns: 1.25fr .95fr 1fr; margin: 32px 0 0; }
+.ronda-confirm-score > div { min-width: 0; padding: 0 12px; border-left: 1px solid var(--confirm-rule); }
+.ronda-confirm-score > div:first-child { padding-left: 0; border-left: 0; }
+.ronda-confirm-score dt { font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--confirm-soft); }
+.ronda-confirm-score dd { margin: 10px 0 0; }
+.ronda-confirm-score strong { display: block; font-family: var(--font-display); font-weight: 400; font-size: clamp(28px, 2.8vw, 46px); line-height: 1; letter-spacing: -.02em; text-transform: uppercase; overflow-wrap: anywhere; }
+.ronda-confirm-score span { display: block; margin-top: 8px; font-size: 12px; line-height: 1.4; color: var(--confirm-soft); }
+.ronda-confirm-way { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px 28px; align-items: center; margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--confirm-rule); }
+.ronda-confirm-way .eyebrow { margin-bottom: 10px; font-size: 11px; }
+.ronda-confirm-way p { margin: 0; font-size: 15px; line-height: 1.55; }
+.ronda-confirm-note { margin: 32px 0 0; max-width: 52ch; font-size: 15px; line-height: 1.55; color: var(--confirm-soft); }
+.ronda-confirm-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 36px; margin-top: 32px; }
+.ronda-confirm-actions .button { width: 100%; justify-content: space-between; background: var(--color-mineral); color: var(--color-cobalt); }
+.ronda-confirm-actions .button:hover { background: var(--color-citron); color: var(--color-ink); }
+.ronda-confirm-actions .text-link { color: var(--color-mineral); }
+
+/* Plano chico de «Cómo llegar»: planta por debajo de 1280 px, isométrico desde ahí, como el plano principal. */
+.ronda-wayfinding-view { display: block; width: 100%; height: auto; overflow: visible; }
+.ronda-wayfinding-view--iso { display: none; }
+.ronda-wayfinding polygon, .ronda-wayfinding polyline { fill: none; stroke: var(--confirm-soft); stroke-width: 1; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+.ronda-wayfinding .w-route { display: none; stroke: var(--color-mineral); stroke-width: 1.6; stroke-dasharray: 3 3; }
+.ronda-wayfinding[data-court="01"] .w-court[data-court-id="01"],
+.ronda-wayfinding[data-court="02"] .w-court[data-court-id="02"],
+.ronda-wayfinding[data-court="03"] .w-court[data-court-id="03"] { fill: var(--color-citron); stroke: var(--color-citron); }
+.ronda-wayfinding[data-court="01"] .w-route[data-court-id="01"],
+.ronda-wayfinding[data-court="02"] .w-route[data-court-id="02"],
+.ronda-wayfinding[data-court="03"] .w-route[data-court-id="03"] { display: inline; }
+
+@media (min-width: 768px) {
+  .ronda-confirm-actions .button { width: auto; }
+}
+@media (min-width: 1024px) {
+  .ronda-confirm {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); grid-template-rows: auto 1fr; grid-template-areas: "head photo" "rest photo";
+    column-gap: clamp(48px, 6vw, 112px); padding-top: clamp(56px, 5.5vw, 96px);
+  }
+  .ronda-confirm-title { margin-top: 28px; font-size: clamp(62px, 7.4vw, 136px); }
+  .ronda-confirm-photo { display: grid; grid-template-rows: minmax(520px, 1fr) auto; margin: 0; }
+  .ronda-confirm-image { aspect-ratio: auto; }
+  .ronda-confirm-photo figcaption { padding-inline: 0; }
+  .ronda-confirm-score { margin-top: 44px; }
+  .ronda-confirm-score > div { padding: 0 18px; }
+  .ronda-confirm-score span { font-size: 13px; }
+  .ronda-confirm-way { grid-template-columns: minmax(0, 220px) minmax(0, 1fr); margin-top: 44px; }
+  .ronda-confirm-way p { font-size: 16px; }
+}
+@media (min-width: 1280px) {
+  .ronda-wayfinding-view--plan { display: none; }
+  .ronda-wayfinding-view--iso { display: block; }
+}
+
+/* Barra fija en celular: solo mientras «Tu turno» queda fuera de la pantalla. Oculta, sale del orden de tabulación. */
+.ronda-booking-bar { display: none; }
+@media (max-width: 767px) {
+  .ronda-booking-bar {
+    position: fixed; z-index: 20; inset: auto 0 0; display: flex; align-items: center; justify-content: space-between; gap: 14px;
+    min-height: 76px; padding: 10px var(--gutter) calc(10px + env(safe-area-inset-bottom)); background: var(--color-cobalt); color: var(--color-mineral);
+    transform: translateY(100%); visibility: hidden; transition: transform 220ms var(--ease-out), visibility 0s linear 220ms;
+  }
+  .ronda-booking-bar[data-visible="true"] { transform: none; visibility: visible; transition: transform 220ms var(--ease-out), visibility 0s; }
+  .ronda-booking-bar-text { min-width: 0; margin: 0; font-family: var(--font-display); font-size: 24px; line-height: 1.1; letter-spacing: -.01em; text-transform: uppercase; }
+  .ronda-booking-bar .button { flex-shrink: 0; min-height: 48px; padding: 10px 18px; font-size: 16px; background: var(--color-mineral); color: var(--color-cobalt); }
+  .ronda-booking-bar .button:focus-visible { outline-color: var(--color-mineral); }
+  /* Con la barra a la vista, el final de la página no queda tapado. */
+  .ronda-booking:has(.ronda-booking-bar[data-visible="true"]) { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
+}
+/* «Jardín · Lun 09 · 20:00» entra en un renglón junto a «Revisar». Va después de la regla de 767 px para ganarle. */
+@media (max-width: 360px) {
+  .ronda-booking-bar-text { font-size: 20px; }
+}
+
 @media (forced-colors: active) {
   .ronda-booking-placeholder { background: GrayText; }
   .ronda-booking-day[aria-pressed="true"], .ronda-booking-hour[aria-pressed="true"], .ronda-plan-tag[aria-pressed="true"] { outline: 3px solid Highlight; outline-offset: -3px; }
   .ronda-booking-notice, .ronda-booking-correction { border: 1px solid CanvasText; }
+  .ronda-booking-bar { border-top: 1px solid CanvasText; }
+  .ronda-confirm-badge { border: 1px solid CanvasText; }
+  .ronda-wayfinding .w-court[data-court-id] { stroke: CanvasText; }
+  .ronda-wayfinding[data-court] .w-court[data-court-id] { fill: none; }
+  .ronda-wayfinding[data-court="01"] .w-court[data-court-id="01"],
+  .ronda-wayfinding[data-court="02"] .w-court[data-court-id="02"],
+  .ronda-wayfinding[data-court="03"] .w-court[data-court-id="03"] { fill: Highlight; stroke: Highlight; }
 }

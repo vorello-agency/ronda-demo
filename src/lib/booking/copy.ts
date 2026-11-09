@@ -2,7 +2,7 @@ import { courts } from "../../data/courts.ts";
 import type { Alternative, Change, Notice, Outcome } from "./conflicts.ts";
 import { CLUB_TIME_ZONE, HORIZON_DAYS, SLOT_MINUTES, today, weekday, type Hour, type IsoDate } from "./club-time.ts";
 import type { Correction } from "./selection.ts";
-import type { CourtId } from "./types.ts";
+import type { Booking, CourtId, Selection } from "./types.ts";
 
 /** Textos de la experiencia de reservas. La lógica devuelve datos; acá se redactan. */
 export const WEEKDAYS_SHORT = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"] as const;
@@ -44,9 +44,9 @@ export const alternativeLabel = (alternative: Alternative): string => `${courtNa
 export function noticeText(notice: Notice): string {
   switch (notice.kind) {
     case "court-busy":
-      return `${courtName(notice.court)} está ocupada a las ${formatHour(notice.hour)}. Mantuvimos la cancha y liberamos el horario.`;
+      return `${courtName(notice.court)} está ocupada a las ${formatHour(notice.hour)}. Elegí otro horario para ${courtName(notice.court)}.`;
     case "hour-busy":
-      return `A las ${formatHour(notice.hour)} ${courtName(notice.court)} está ocupada. Mantuvimos el horario y liberamos la cancha.`;
+      return `${courtName(notice.court)} está ocupada a las ${formatHour(notice.hour)}. Elegí otra cancha para ese horario.`;
     case "hour-full":
       return `A las ${formatHour(notice.hour)} no queda ninguna cancha libre.`;
     case "date-no-room":
@@ -86,7 +86,7 @@ export function correctionText(correction: Correction): string {
 /* ---- Etiquetas y anuncios del flujo interactivo ---- */
 
 type HourOptionLike = { hour: Hour; free: readonly CourtId[]; tone: "free" | "alt" | "full" };
-type CourtOptionLike = { id: CourtId; state: "idle" | "free" | "taken"; selected: boolean; freeHours: number };
+type CourtOptionLike = { id: CourtId; state: "idle" | "free" | "taken" | "yours"; selected: boolean; freeHours: number };
 
 const surfaceOf = (id: CourtId) => courts.find((court) => court.id === id)?.surface ?? "";
 
@@ -121,6 +121,7 @@ export function courtStatusText(option: CourtOptionLike): string {
   if (option.selected) return "Elegida";
   if (option.state === "free") return "Libre";
   if (option.state === "taken") return "Ocupada";
+  if (option.state === "yours") return "Tu reserva";
   return `${surfaceOf(option.id)} · ${turns(option.freeHours)}`;
 }
 
@@ -128,7 +129,7 @@ export function courtStatusText(option: CourtOptionLike): string {
 export function courtOptionLabel(option: CourtOptionLike, hour: Hour | null): string {
   const availability = option.state === "idle"
     ? `${turns(option.freeHours)} ${option.freeHours === 1 ? "disponible" : "disponibles"}`
-    : `${option.state === "free" ? "Libre" : "Ocupada"} a las ${formatHour(hour as Hour)}`;
+    : `${option.state === "free" ? "Libre" : option.state === "yours" ? "Tu reserva" : "Ocupada"} a las ${formatHour(hour as Hour)}`;
   return `${courtName(option.id)}, cancha ${option.id}, ${surfaceOf(option.id).toLowerCase()}. ${option.selected ? "Elegida. " : ""}${availability}.`;
 }
 
@@ -171,3 +172,37 @@ export function clubTimeNote(nowMs: number, visitorTimeZone: string | undefined)
     return null;
   }
 }
+
+/* ---- Confirmación y barra fija ---- */
+
+/**
+ * Texto de la barra fija en celular, que acompaña mientras «Tu turno» queda fuera de la pantalla.
+ * Vacío si no hay nada elegido: la barra no se muestra.
+ */
+export function barText(selection: Selection, nowMs: number): string {
+  const court = selection.court === null ? null : courtName(selection.court);
+  const hour = selection.hour === null ? null : formatHour(selection.hour);
+  if (court && hour) return `${court} · ${dayLabel(selection.date, nowMs)} · ${hour}`;
+  if (court) return `${court} · falta la hora`;
+  if (hour) return `${hour} · falta la cancha`;
+  return "";
+}
+
+const ORDINALS = ["primera", "segunda", "tercera"] as const;
+
+/** «Cómo llegar»: el acceso está al oeste y las canchas se cuentan desde ahí, en el orden del plano. */
+export function wayfindingText(court: CourtId): string {
+  const position = courts.findIndex((item) => item.id === court);
+  return `Entrá por el acceso oeste y seguí la galería del pabellón. ${courtName(court)} es la ${ORDINALS[position]} cancha desde el acceso.`;
+}
+
+/** Marcador de la confirmación: valor grande y detalle de cancha, día y hora («Jardín» · «02 · Arcilla», «Vie 06» · «noviembre», «19:00» · «hasta 20:00»). */
+export const confirmationScore = (booking: Booking) => [
+  { label: "Cancha", value: courtName(booking.court), detail: `${booking.court} · ${surfaceOf(booking.court)}` },
+  { label: "Día", value: `${WEEKDAYS_SHORT[weekday(booking.date)]} ${pad(dayNumber(booking.date))}`, detail: MONTHS[monthIndex(booking.date)] },
+  { label: "Hora", value: formatHour(booking.hour), detail: `hasta ${pad(booking.hour + 1)}:00` },
+];
+
+/** El turno confirmado ya no está disponible (por ejemplo, empezó mientras la página estaba abierta). */
+export const confirmFailedText = (selection: Selection): string =>
+  selection.hour === null ? "Elegí un horario para confirmar." : `El turno de las ${formatHour(selection.hour)} ya no está disponible. Elegí otro horario.`;
