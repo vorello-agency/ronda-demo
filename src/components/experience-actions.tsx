@@ -1,12 +1,12 @@
 "use client";
 
-import { createContext, useContext, useRef, useState, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { ArrowUpRightIcon, XIcon } from "@phosphor-icons/react";
 import { notices, type NoticeTopic } from "@/config/site";
 import { containDialogFocus } from "@/lib/dialog";
-import type { ReservationCourt } from "@/data/courts";
 
-type OpenNotice = (topic: NoticeTopic, returnTo?: HTMLElement, court?: ReservationCourt) => void;
+/** Avisos informativos de la landing (hoy, solo clases). Reservar ya no abre un aviso: lleva a `/reservar`. */
+type OpenNotice = (topic: NoticeTopic, returnTo?: HTMLElement) => void;
 const ActionsContext = createContext<OpenNotice | null>(null);
 
 export function useExperienceActions() {
@@ -18,13 +18,15 @@ export function useExperienceActions() {
 export function ExperienceActions({ children }: { children: ReactNode }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
-  const [notice, setNotice] = useState<{ topic: NoticeTopic; court?: ReservationCourt }>({ topic: "reservation" });
-  const { topic, court } = notice;
-  const destination = topic === "training" ? "entrenamiento" : court ? "canchas" : "el-club";
+  const [topic, setTopic] = useState<NoticeTopic>("training");
+  const destination = "entrenamiento";
 
-  const open: OpenNotice = (nextTopic, returnTo, selectedCourt) => {
+  // Si se navega a otra ruta con el aviso abierto, el body no queda bloqueado.
+  useEffect(() => () => document.body.classList.remove("has-modal"), []);
+
+  const open: OpenNotice = (nextTopic, returnTo) => {
     returnFocus.current = returnTo ?? (document.activeElement as HTMLElement);
-    setNotice({ topic: nextTopic, court: nextTopic === "reservation" ? selectedCourt : undefined });
+    setTopic(nextTopic);
     dialog.current?.showModal();
     document.body.classList.add("has-modal");
   };
@@ -51,24 +53,16 @@ export function ExperienceActions({ children }: { children: ReactNode }) {
             <XIcon size={26} weight="light" aria-hidden="true" />
           </button>
           <p className="eyebrow">{notices[topic].eyebrow}</p>
-          <h2 id="notice-title">{court ? `${court.id} · ${court.name}` : notices[topic].title}</h2>
-          <p id="notice-description">{court && <span>Elegiste {court.name} ({court.surface.toLowerCase()}). </span>}{notices[topic].body}</p>
+          <h2 id="notice-title">{notices[topic].title}</h2>
+          <p id="notice-description">{notices[topic].body}</p>
           <a className="button" href={`#${destination}`} onClick={() => {
             close();
             returnFocus.current = document.getElementById(destination);
-          }}>{topic === "training" ? "Volver a entrenamiento" : court ? "Volver a las canchas" : "Conocer el club"} <ArrowUpRightIcon size={22} weight="light" aria-hidden="true" /></a>
+          }}>Volver a entrenamiento <ArrowUpRightIcon size={22} weight="light" aria-hidden="true" /></a>
         </div>
       </dialog>
     </ActionsContext>
   );
-}
-
-export function ReserveButton({ className = "", arrow = true, court }: { className?: string; arrow?: boolean; court?: ReservationCourt }) {
-  const open = useExperienceActions();
-  return <button className={`button ${className}`} aria-label={court ? `Reservar esta cancha: ${court.id} ${court.name}` : undefined} onClick={(event) => open("reservation", event.currentTarget, court)}>
-    {court ? "Reservar esta cancha" : "Reservar cancha"}
-    {arrow && <ArrowUpRightIcon size={24} weight="light" aria-hidden="true" />}
-  </button>;
 }
 
 export function TrainingInfoButton({ className = "" }: { className?: string }) {

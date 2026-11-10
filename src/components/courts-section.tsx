@@ -1,7 +1,7 @@
 import { Fragment } from "react";
 import Image from "next/image";
 import { courts, type Court } from "@/data/courts";
-import { ReserveButton } from "./experience-actions";
+import { ReserveLink } from "./reserve-link";
 import "./courts-section.css";
 
 function CourtDetails({ court }: { court: Court }) {
@@ -14,7 +14,7 @@ function CourtDetails({ court }: { court: Court }) {
       <div><dt>Superficie</dt><dd>{court.surface}<span>{court.surfaceDetail}</span></dd></div>
       <div><dt>El espacio</dt><dd>{court.setting}<span>{court.lighting}</span></dd></div>
     </dl>
-    <ReserveButton className="ronda-court-reserve" court={{ id: court.id, name: court.name, surface: court.surface }} />
+    <ReserveLink className="ronda-court-reserve" court={{ id: court.id, name: court.name, surface: court.surface }} />
   </div>;
 }
 

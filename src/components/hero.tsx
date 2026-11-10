@@ -1,5 +1,5 @@
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr";
-import { ReserveButton } from "./experience-actions";
+import { ReserveLink } from "./reserve-link";
 
 export function Hero() {
   return <section className="hero" aria-labelledby="hero-title">
@@ -8,7 +8,7 @@ export function Hero() {
         <span>El juego</span>{" "}<span>Tiene lugar<span className="accent" aria-hidden="true">.</span></span>
       </h1>
       <p className="hero-description">Canchas para jugar.<br />Un club para volver.</p>
-      <ReserveButton className="hero-reserve" />
+      <ReserveLink className="hero-reserve" />
       <a className="text-link hero-tour" href="#el-club">Recorré el club <ArrowRightIcon size={22} weight="light" aria-hidden="true" /></a>
     </div>
     <figure className="hero-figure">

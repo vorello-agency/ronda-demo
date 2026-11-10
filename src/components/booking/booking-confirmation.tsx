@@ -6,6 +6,7 @@ import type { ReactNode, Ref } from "react";
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { courts } from "@/data/courts";
 import { confirmationScore, wayfindingText } from "@/lib/booking/copy";
+import { clubHref } from "@/lib/booking/selection";
 import type { Booking } from "@/lib/booking/types";
 
 type Props = { booking: Booking; wayfinding: ReactNode; titleRef: Ref<HTMLHeadingElement>; onAgain: () => void };
@@ -54,7 +55,7 @@ export function BookingConfirmation({ booking, wayfinding, titleRef, onAgain }: 
         <button type="button" className="button" onClick={onAgain}>
           Hacer otra reserva <ArrowRightIcon size={20} weight="light" aria-hidden="true" />
         </button>
-        <Link className="text-link" href="/">
+        <Link className="text-link" href={clubHref(booking.court)}>
           Volver al club <ArrowRightIcon size={20} weight="light" aria-hidden="true" />
         </Link>
       </div>

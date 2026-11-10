@@ -1,3 +1,4 @@
+import { courts } from "../../data/courts.ts";
 import { COURT_IDS, freeCourtsAt, isFree } from "./availability.ts";
 import { defaultDate, isHour, isWithinHorizon, parseIsoDate, slotStarted, today, type Hour } from "./club-time.ts";
 import type { Booking, Context, CourtId, Selection } from "./types.ts";
@@ -80,3 +81,9 @@ export function canonicalSearch(selection: Selection, nowMs: number, options: { 
 
 /** Destino de los accesos de reserva; con cancha, la deja elegida. */
 export const bookingHref = (court?: CourtId): string => (court ? `${BOOKING_PATH}?cancha=${court}` : BOOKING_PATH);
+
+/** Destino de «Volver al club»: la sección de la cancha elegida en la home, o el inicio si no hay ninguna válida. */
+export const clubHref = (court: string | null | undefined): string => {
+  const anchor = courts.find((item) => item.id === court)?.anchor;
+  return anchor ? `/#${anchor}` : "/";
+};

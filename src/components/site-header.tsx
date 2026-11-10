@@ -4,7 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { ListIcon, XIcon } from "@phosphor-icons/react";
 import { navigation, site } from "@/config/site";
 import { containDialogFocus } from "@/lib/dialog";
-import { ReserveButton, useExperienceActions } from "./experience-actions";
+import { useExperienceActions } from "./experience-actions";
+import { ReserveLink } from "./reserve-link";
 
 export function SiteHeader() {
   const menu = useRef<HTMLDialogElement>(null);
@@ -23,7 +24,12 @@ export function SiteHeader() {
       }
     };
     media.addEventListener("change", onResize);
-    return () => media.removeEventListener("change", onResize);
+    return () => {
+      media.removeEventListener("change", onResize);
+      // Al navegar a otra ruta desde el menú, el header se desmonta antes de que llegue el evento `close`:
+      // sin esto, `/reservar` quedaría con el scroll bloqueado.
+      document.body.classList.remove("has-modal");
+    };
   }, []);
 
   function navItems(mobile = false) {
@@ -44,7 +50,7 @@ export function SiteHeader() {
       <span className="brand-descriptor">{site.descriptor}</span>
     </a>
     <nav className="desktop-nav" aria-label="Navegación principal">{navItems()}</nav>
-    <ReserveButton className="header-reserve" arrow={false} />
+    <ReserveLink className="header-reserve" arrow={false} />
     <button ref={toggle} id="menu-toggle" className="menu-toggle" aria-expanded={expanded} aria-controls="mobile-menu" aria-haspopup="dialog" onClick={() => {
       menu.current?.showModal();
       setExpanded(true);
@@ -61,10 +67,7 @@ export function SiteHeader() {
           <button className="icon-button" aria-label="Cerrar menú" autoFocus onClick={closeMenu}><XIcon size={28} weight="light" aria-hidden="true" /></button>
         </div>
         <nav aria-label="Navegación móvil">{navItems(true)}</nav>
-        <button className="button" onClick={() => {
-          closeMenu();
-          openNotice("reservation", toggle.current ?? undefined);
-        }}>Reservar cancha</button>
+        <ReserveLink arrow={false} onClick={closeMenu} />
         <p className="menu-note">El juego tiene lugar.</p>
       </div>
     </dialog>

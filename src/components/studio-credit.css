@@ -1,0 +1,12 @@
+/* Atribución del estudio (home y reservas). Toma el color del footer que la contiene. */
+.studio-credit { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.studio-credit-label { margin: 0; font-size: 11px; font-weight: 500; line-height: 1.4; letter-spacing: .18em; text-transform: uppercase; }
+.studio-credit-logo { display: inline-flex; align-items: center; min-height: 44px; }
+.studio-credit-logo svg { display: block; width: auto; height: 40px; }
+.studio-credit-portfolio { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-size: 13px; font-weight: 500; line-height: 1.4; color: inherit; text-decoration: underline; text-decoration-color: transparent; text-underline-offset: 4px; transition: text-decoration-color 180ms ease; }
+.studio-credit-portfolio:hover { text-decoration-color: currentColor; }
+.studio-credit-portfolio svg { transition: transform 200ms var(--ease-out); }
+.studio-credit-portfolio:hover svg { transform: translate(2px, -2px); }
+@media (max-width: 767px) {
+  .studio-credit-logo svg { height: 36px; }
+}

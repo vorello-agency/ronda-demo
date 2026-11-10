@@ -1,5 +1,5 @@
 import { TennisBallIcon } from "@phosphor-icons/react/ssr";
-import { ReserveButton } from "@/components/experience-actions";
+import { ReserveLink } from "@/components/reserve-link";
 import "./landing-close.css";
 
 export function FinalCta() {
@@ -10,7 +10,7 @@ export function FinalCta() {
       <div className="final-cta-action">
         <TennisBallIcon className="final-cta-ball" size={100} weight="light" aria-hidden="true" />
         <p>Elegí tu cancha.<br />Traé ganas de jugar.</p>
-        <ReserveButton className="final-reserve" />
+        <ReserveLink className="final-reserve" />
       </div>
     </div>
   </section>;

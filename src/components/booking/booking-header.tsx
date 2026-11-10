@@ -1,6 +1,8 @@
 import Link from "next/link";
-import { ArrowRightIcon } from "@phosphor-icons/react/ssr";
-import { site } from "@/config/site";
+import { Suspense } from "react";
+import { StudioCredit } from "@/components/studio-credit";
+import { conceptNotice, site } from "@/config/site";
+import { BackToClub, BackToClubLink } from "./back-to-club";
 
 /** Header de la página de reservas: la marca y un único regreso al club, sin la navegación de la landing. */
 export function BookingHeader() {
@@ -9,16 +11,15 @@ export function BookingHeader() {
       <span className="wordmark">{site.name}</span>{" "}
       <span className="brand-descriptor">{site.descriptor}</span>
     </Link>
-    <Link className="text-link ronda-booking-back" href="/">
-      Volver al club <ArrowRightIcon size={20} weight="light" aria-hidden="true" />
-    </Link>
+    {/* La cancha llega por la URL: en el HTML estático el regreso apunta al inicio hasta que el cliente la lee. */}
+    <Suspense fallback={<BackToClubLink />}><BackToClub /></Suspense>
   </header>;
 }
 
-/** Pie con los avisos obligatorios del proyecto conceptual. */
+/** Pie sobrio de una página de tarea: la atribución del estudio y los avisos obligatorios del proyecto conceptual. */
 export function BookingFooter() {
   return <footer className="ronda-booking-footer">
-    <p>Diseño y desarrollo · <span>{site.studio}</span></p>
-    <p>Proyecto conceptual. El club, las instalaciones y las actividades son ficticios. Fotografías generadas con IA.</p>
+    <StudioCredit />
+    <p className="ronda-booking-footer-notice">{conceptNotice}</p>
   </footer>;
 }

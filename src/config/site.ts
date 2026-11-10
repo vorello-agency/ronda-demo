@@ -5,6 +5,7 @@ export const site = {
   title: "El juego tiene lugar.",
   description: "Canchas para jugar. Un club para volver.",
   studio: "Vorello Agency",
+  studioUrl: "https://vorelloagency.com",
   url: "https://ronda-demo.vorelloagency.com",
 } as const;
 
@@ -22,11 +23,6 @@ export const footerNavigation = [
 ] as const;
 
 export const notices = {
-  reservation: {
-    eyebrow: "Proyecto conceptual",
-    title: "Nos vemos en la cancha.",
-    body: "Esta es una experiencia de demostración. Las reservas todavía no están habilitadas y no se realizan reservas ni pagos reales.",
-  },
   training: {
     eyebrow: "Entrenamiento",
     title: "Tu punto de partida.",
@@ -34,3 +30,7 @@ export const notices = {
   },
 } as const;
 export type NoticeTopic = keyof typeof notices;
+
+/** Avisos obligatorios del proyecto conceptual, en un solo párrafo junto a la atribución del estudio (home y reservas). */
+export const conceptNotice =
+  `Proyecto conceptual con fines demostrativos para el portfolio de ${site.studio}. El club, sus instalaciones y actividades son ficticios, y las fotografías fueron generadas con IA.`;

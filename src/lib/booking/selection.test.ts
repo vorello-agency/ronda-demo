@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { COURT_IDS, demoUnit, freeCourtsAt, isFree } from "./availability.ts";
 import { HOURS, defaultDate, horizonDates } from "./club-time.ts";
-import { BOOKING_PATH, bookingHref, canonicalSearch, parseSelection } from "./selection.ts";
+import { BOOKING_PATH, bookingHref, canonicalSearch, clubHref, parseSelection } from "./selection.ts";
 import { FUTURE_DATES, NOW, contextAt, findScenario } from "./test-utils.ts";
 
 const ctx = contextAt();
@@ -249,5 +249,19 @@ describe("bookingHref", () => {
 
   it("la fecha por defecto coincide con la de la selección inicial", () => {
     assert.equal(parse("").selection.date, defaultDate(NOW));
+  });
+});
+
+describe("clubHref", () => {
+  it("vuelve a la sección de la cancha elegida en la home", () => {
+    assert.equal(clubHref("01"), "/#cancha-central");
+    assert.equal(clubHref("02"), "/#cancha-jardin");
+    assert.equal(clubHref("03"), "/#cancha-club");
+  });
+
+  it("sin cancha, o con una que no existe, vuelve al inicio", () => {
+    assert.equal(clubHref(null), "/");
+    assert.equal(clubHref(undefined), "/");
+    assert.equal(clubHref("09"), "/");
   });
 });
