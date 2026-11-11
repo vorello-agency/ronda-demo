@@ -42,7 +42,7 @@ export function CourtPlan({ art, options, hour, attributes, onSelect }: Props) {
         return <button
           key={option.id}
           type="button"
-          className={`ronda-plan-tag${option.state === "taken" ? " is-taken" : option.state === "yours" ? " is-yours" : ""}`}
+          className={`ronda-plan-tag is-${option.state}`}
           style={courtTagStyle(option.id)}
           data-court-tag={option.id}
           aria-pressed={option.selected}

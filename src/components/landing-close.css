@@ -49,9 +49,10 @@
  * con la fuente de display, la R empieza 0,0381 em adentro y la A termina 2,2267 em después (medido con canvas).
  * El margen negativo alinea la R con el gutter y el tamaño hace que la A llegue justo al borde derecho.
  * Es decorativo (aria-hidden): no toma el puntero ni se selecciona, porque la zona de texto de la fuente es más alta
- * que la línea y el cursor de texto aparecía por encima y por debajo de las letras.
+ * que la línea y el cursor de texto aparecía por encima y por debajo de las letras. Con espaciado de texto ampliado
+ * (WCAG 1.4.12) la palabra se ensancha: se recorta en su caja para no generar scroll horizontal.
  */
-.footer-wordmark { margin: clamp(24px, 4vw, 72px) 0 clamp(16px, 2vw, 32px) -.0381em; font-family: var(--font-display); font-size: calc(100cqi / 2.2275); font-weight: 400; line-height: .92; letter-spacing: -.04em; text-transform: uppercase; white-space: nowrap; pointer-events: none; user-select: none; }
+.footer-wordmark { margin: clamp(24px, 4vw, 72px) 0 clamp(16px, 2vw, 32px) -.0381em; font-family: var(--font-display); font-size: calc(100cqi / 2.2275); font-weight: 400; line-height: .92; letter-spacing: -.04em; text-transform: uppercase; white-space: nowrap; overflow: clip; pointer-events: none; user-select: none; }
 .footer-bottom { display: flex; align-items: end; justify-content: space-between; gap: 48px; border-top: 1px solid var(--rule); padding-top: 22px; }
 /* Un párrafo con renglones parejos; su última línea cae a la altura de «Explorar portfolio del estudio».
    En la columna derecha se alinea a la derecha; apilado en celular, a la izquierda. */

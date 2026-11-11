@@ -230,3 +230,7 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
   .editorial-break { margin-top: .5em; }
   .training-intro .editorial-break { margin-top: .3em; }
 }
+/* Colores forzados: los botones pierden su fondo; un borde del sistema los mantiene reconocibles como botones. */
+@media (forced-colors: active) {
+  .button { border: 1px solid ButtonText; }
+}

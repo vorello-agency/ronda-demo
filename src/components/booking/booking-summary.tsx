@@ -23,7 +23,9 @@ export function BookingSummary({ selection, onJump, onConfirm }: Props) {
     { target: "date", label: "Día", value: day, placeholder: "" },
     { target: "hour", label: "Hora", value: hour, placeholder: "Elegí hora" },
   ];
-  const details = [court?.surface, selection.hour === null ? null : formatRange(selection.hour)].filter(Boolean).join(" · ");
+  // Con solo la cancha, la superficie no queda sola: se suma la duración del turno, como cuando no hay nada elegido.
+  const length = `Turno de ${SLOT_MINUTES} minutos`;
+  const details = selection.hour !== null ? [court?.surface, formatRange(selection.hour)].filter(Boolean).join(" · ") : court ? `${court.surface} · ${length}` : length;
 
   return <section className="ronda-booking-ticket" aria-labelledby="ronda-ticket-title">
     <h2 className="eyebrow" id="ronda-ticket-title">Tu turno</h2>
@@ -39,7 +41,7 @@ export function BookingSummary({ selection, onJump, onConfirm }: Props) {
         <span className="ronda-booking-summary-value" aria-hidden="true">{item.value ?? item.placeholder}</span>
       </button>)}
     </div>
-    <p className="ronda-booking-summary-caption">{details || `Turno de ${SLOT_MINUTES} minutos`}</p>
+    <p className="ronda-booking-summary-caption">{details}</p>
     {court && hour && <button type="button" className="button ronda-booking-confirm" onClick={onConfirm}>
       Confirmar reserva simulada <ArrowRightIcon size={20} weight="light" aria-hidden="true" />
     </button>}

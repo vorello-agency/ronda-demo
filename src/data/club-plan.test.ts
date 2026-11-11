@@ -41,8 +41,11 @@ describe("geometría del club", () => {
   });
 
   const jsonPath = fileURLToPath(new URL("../../docs/exploracion/refinamiento-b/geometria-club.json", import.meta.url));
-  // La referencia es obligatoria: si el archivo se mueve o se borra, la prueba falla en lugar de omitirse.
-  it("coincide con docs/exploracion/refinamiento-b/geometria-club.json", () => {
+  const docsPath = fileURLToPath(new URL("../../docs", import.meta.url));
+  // La referencia vive en docs/, material interno que no se publica (.git/info/exclude). Sin docs/ —un clon del repo
+  // público— la prueba se omite y lo dice. Con docs/ es obligatoria: si el JSON se mueve o se borra, falla.
+  const skip = existsSync(docsPath) ? false : "la referencia espacial (docs/) solo existe en el clon de trabajo; no se publica";
+  it("coincide con docs/exploracion/refinamiento-b/geometria-club.json", { skip }, () => {
     assert.ok(existsSync(jsonPath), `No se encontró la referencia espacial en ${jsonPath}. Si se movió, actualizá la ruta en esta prueba.`);
     const reference = JSON.parse(readFileSync(jsonPath, "utf8"));
     // Un elemento espacial nuevo en el JSON (otra cancha, una piscina…) tiene que revisarse acá y en club-plan.ts.

@@ -1,4 +1,4 @@
-import { freeCourtsAt, isFree, nearestFreeHour } from "./availability.ts";
+import { freeCourtsAt, isFree, nearestFreeHour, slotStatus } from "./availability.ts";
 import { clubClock, defaultDate, isWithinHorizon, slotStarted, type Hour, type IsoDate } from "./club-time.ts";
 import type { Context, CourtId, Selection } from "./types.ts";
 
@@ -7,10 +7,13 @@ export type Alternative = { court: CourtId; hour: Hour };
 
 /** Qué pasó con la selección. Son datos, no texto: la redacción vive en `copy.ts`. */
 export type Notice =
-  /** Se eligió una cancha ocupada a la hora elegida: se conserva la cancha y se libera el horario. */
-  | { kind: "court-busy"; court: CourtId; hour: Hour; alternatives: Alternative[] }
+  /**
+   * Se eligió una cancha ocupada a la hora elegida: se conserva la cancha y se libera el horario.
+   * `yours`: el turno no está ocupado por otros, la persona ya lo reservó en esta visita.
+   */
+  | { kind: "court-busy"; court: CourtId; hour: Hour; alternatives: Alternative[]; yours?: true }
   /** Se eligió un horario sin lugar en la cancha elegida: se conserva el horario y se libera la cancha. */
-  | { kind: "hour-busy"; court: CourtId; hour: Hour; alternatives: Alternative[] }
+  | { kind: "hour-busy"; court: CourtId; hour: Hour; alternatives: Alternative[]; yours?: true }
   /** Ninguna cancha tiene lugar a esa hora. */
   | { kind: "hour-full"; hour: Hour }
   /** Al cambiar de día, el horario elegido quedó sin lugar. */
@@ -36,6 +39,10 @@ const unchanged = (selection: Selection, notice: Notice | null = null): Outcome 
 function hourWorks(date: IsoDate, court: CourtId | null, hour: Hour, ctx: Context): boolean {
   return court ? isFree(date, court, hour, ctx) : freeCourtsAt(date, hour, ctx).length > 0;
 }
+
+/** `{ yours: true }` si el turno es una reserva de esta visita; vacío si está ocupado por otros. */
+const yoursFlag = (date: IsoDate, court: CourtId, hour: Hour, ctx: Context): { yours?: true } =>
+  slotStatus(date, court, hour, ctx) === "yours" ? { yours: true } : {};
 
 function alternativesFor(origin: "court" | "hour", date: IsoDate, court: CourtId, hour: Hour, ctx: Context): Alternative[] {
   const sameCourt = nearestFreeHour(date, court, hour, ctx);
@@ -68,7 +75,7 @@ export function applyChange(selection: Selection, change: Change, ctx: Context):
       if (selection.hour === null || isFree(selection.date, change.court, selection.hour, ctx)) return unchanged(next);
       return {
         selection: { ...next, hour: null },
-        notice: { kind: "court-busy", court: change.court, hour: selection.hour, alternatives: alternativesFor("court", selection.date, change.court, selection.hour, ctx) },
+        notice: { kind: "court-busy", court: change.court, hour: selection.hour, alternatives: alternativesFor("court", selection.date, change.court, selection.hour, ctx), ...yoursFlag(selection.date, change.court, selection.hour, ctx) },
       };
     }
     case "hour": {
@@ -78,7 +85,7 @@ export function applyChange(selection: Selection, change: Change, ctx: Context):
       if (selection.court === null || isFree(selection.date, selection.court, change.hour, ctx)) return unchanged(next);
       return {
         selection: { ...next, court: null },
-        notice: { kind: "hour-busy", court: selection.court, hour: change.hour, alternatives: alternativesFor("hour", selection.date, selection.court, change.hour, ctx) },
+        notice: { kind: "hour-busy", court: selection.court, hour: change.hour, alternatives: alternativesFor("hour", selection.date, selection.court, change.hour, ctx), ...yoursFlag(selection.date, selection.court, change.hour, ctx) },
       };
     }
     case "pick": {

@@ -41,12 +41,18 @@ export function joinList(items: readonly string[]): string {
 
 export const alternativeLabel = (alternative: Alternative): string => `${courtName(alternative.court)} a las ${formatHour(alternative.hour)}`;
 
+/** «Jardín está ocupada a las 20:00.», o «Ya reservaste Jardín a las 20:00.» si el turno es de esta visita. */
+const taken = (notice: { court: CourtId; hour: Hour; yours?: true }): string =>
+  notice.yours
+    ? `Ya reservaste ${courtName(notice.court)} a las ${formatHour(notice.hour)}.`
+    : `${courtName(notice.court)} está ocupada a las ${formatHour(notice.hour)}.`;
+
 export function noticeText(notice: Notice): string {
   switch (notice.kind) {
     case "court-busy":
-      return `${courtName(notice.court)} está ocupada a las ${formatHour(notice.hour)}. Elegí otro horario para ${courtName(notice.court)}.`;
+      return `${taken(notice)} Elegí otro horario para ${courtName(notice.court)}.`;
     case "hour-busy":
-      return `${courtName(notice.court)} está ocupada a las ${formatHour(notice.hour)}. Elegí otra cancha para ese horario.`;
+      return `${taken(notice)} Elegí otra cancha para ese horario.`;
     case "hour-full":
       return `A las ${formatHour(notice.hour)} no queda ninguna cancha libre.`;
     case "date-no-room":

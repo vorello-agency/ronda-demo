@@ -1,8 +1,8 @@
 # Ronda · Club de Tenis
 
-Landing editorial de un club de tenis conceptual, diseñada y desarrollada por Vorello Agency. Construida con Next.js 16 (App Router), React 19, TypeScript y Tailwind CSS 4.
+Landing editorial y sistema de reservas simulado de un club de tenis conceptual, diseñados y desarrollados por Vorello Agency. Construida con Next.js 16 (App Router), React 19, TypeScript y Tailwind CSS 4.
 
-> **Proyecto conceptual.** El club, las instalaciones y las actividades son ficticios, y las fotografías fueron generadas con IA. Los accesos de reserva y de clases muestran un aviso de demostración: no se realizan reservas, inscripciones ni pagos reales.
+> **Proyecto conceptual.** El club, las instalaciones y las actividades son ficticios, y las fotografías fueron generadas con IA. `/reservar` simula la disponibilidad y la confirmación: no se realizan reservas, inscripciones ni pagos reales, y nada se guarda al cerrar la página.
 
 ## Requisitos
 
@@ -28,11 +28,12 @@ Abrir `http://127.0.0.1:3000`. Para usar otro puerto: `npm run dev -- --port 301
 ## Calidad
 
 ```sh
+npm test
 npm run lint
 npm run typecheck
 ```
 
-`typecheck` genera los tipos de rutas de Next.js (`next typegen`) y luego ejecuta `tsc --noEmit`.
+`test` ejecuta las pruebas de la lógica de reservas (`src/**/*.test.ts`) con el corredor nativo de Node, sin dependencias. `typecheck` genera los tipos de rutas de Next.js (`next typegen`) y luego ejecuta `tsc --noEmit`.
 
 ## Producción
 
@@ -41,14 +42,16 @@ npm run build
 npm run start
 ```
 
-`build` compila con Webpack (`next build --webpack`) y prerenderiza la página como contenido estático. `start` sirve la compilación en `http://127.0.0.1:3000`.
+`build` compila con Webpack (`next build --webpack`) y prerenderiza `/` y `/reservar` como contenido estático. `start` sirve la compilación en `http://127.0.0.1:3000`.
 
 ## Estructura
 
-- `src/app/`: layout, página, estilos globales, fuentes locales, íconos (`icon.svg`, `apple-icon.png`, `favicon.ico`) e imagen para compartir (`opengraph-image.jpg`).
-- `src/components/`: secciones de la landing y acciones modales.
+- `src/app/`: layout, home, ruta `reservar/`, estilos globales, fuentes locales, íconos (`icon.svg`, `apple-icon.png`, `favicon.ico`) e imagen para compartir (`opengraph-image.jpg`).
+- `src/components/`: secciones de la landing, enlaces de reserva, atribución del estudio y aviso de clases.
+- `src/components/booking/`: interfaz de reservas (plano, horarios, resumen, confirmación, barra fija) y su hoja `booking.css`.
+- `src/lib/booking/`: lógica de reservas pura y probada: reloj del club, disponibilidad simulada, URL, conflictos y textos.
 - `src/config/site.ts`: identidad, URL pública (base de los enlaces de la imagen para compartir), navegación y textos de los avisos.
-- `src/data/courts.ts`: datos de las tres canchas.
+- `src/data/courts.ts` y `src/data/club-plan.ts`: datos de las tres canchas y geometría del club.
 - `public/images/`: fotografías WebP optimizadas.
 
 ## Fuentes

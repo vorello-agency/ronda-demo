@@ -2,8 +2,9 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { freeCourtsAt } from "./availability.ts";
 import { confirmSelection } from "./bookings.ts";
+import { applyChange } from "./conflicts.ts";
 import { today } from "./club-time.ts";
-import { barText, confirmFailedText, confirmationScore, courtOptionLabel, courtStatusText, wayfindingText } from "./copy.ts";
+import { barText, confirmFailedText, confirmationScore, courtOptionLabel, courtStatusText, noticeText, wayfindingText } from "./copy.ts";
 import { courtOptions } from "./flow-view.ts";
 import { FUTURE_DATES, NOW, contextAt, findScenario } from "./test-utils.ts";
 
@@ -67,5 +68,37 @@ describe("confirmación", () => {
 
   it("si el turno dejó de estar disponible al confirmar, lo explica", () => {
     assert.equal(confirmFailedText({ date: FUTURE_DATES[0], court: "02", hour: 19 }), "El turno de las 19:00 ya no está disponible. Elegí otro horario.");
+  });
+});
+
+describe("elegir otra vez un turno propio", () => {
+  const slot = freeSlot();
+  const booked = confirmSelection(slot, ctx);
+  assert.ok(booked.ok);
+  const after = contextAt(NOW, booked.bookings);
+
+  it("eligiendo la cancha con la hora ya puesta: «Ya reservaste…» y pide otro horario", () => {
+    const outcome = applyChange({ date: slot.date, court: null, hour: slot.hour }, { type: "court", court: slot.court }, after);
+    assert.equal(outcome.notice?.kind, "court-busy");
+    assert.ok(outcome.notice && "yours" in outcome.notice && outcome.notice.yours);
+    assert.match(noticeText(outcome.notice!), /^Ya reservaste \S+ a las \d\d:00\. Elegí otro horario para \S+\.$/);
+  });
+
+  it("eligiendo la hora con la cancha ya puesta: «Ya reservaste…» y pide otra cancha", () => {
+    const outcome = applyChange({ date: slot.date, court: slot.court, hour: null }, { type: "hour", hour: slot.hour }, after);
+    if (outcome.notice?.kind !== "hour-busy") return; // si ninguna otra cancha tiene lugar, el aviso es «completo»
+    assert.ok(outcome.notice.yours);
+    assert.match(noticeText(outcome.notice), /^Ya reservaste \S+ a las \d\d:00\. Elegí otra cancha para ese horario\.$/);
+  });
+
+  it("una cancha ocupada por otros sigue diciendo «está ocupada»", () => {
+    const busy = findScenario((date, hour) => {
+      const free = freeCourtsAt(date, hour, ctx);
+      const other = (["01", "02", "03"] as const).find((id) => !free.includes(id));
+      return other && free.length > 0 ? { date, hour, court: other } : null;
+    });
+    const outcome = applyChange({ date: busy.date, court: null, hour: busy.hour }, { type: "court", court: busy.court }, ctx);
+    assert.ok(outcome.notice && !("yours" in outcome.notice));
+    assert.match(noticeText(outcome.notice!), /está ocupada a las/);
   });
 });
