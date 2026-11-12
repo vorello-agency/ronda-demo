@@ -14,10 +14,26 @@
   --font-heading: var(--font-display);
 }
 
-:root { --gutter: clamp(24px, 4.2vw, 88px); --rule: #263f9e55; --ease-out: cubic-bezier(.22, 1, .36, 1); }
+:root {
+  --gutter: clamp(24px, 4.2vw, 88px);
+  --rule: #263f9e55;
+  --ease-out: cubic-bezier(.22, 1, .36, 1);
+  /* Interlineados compartidos por función, sin unidades para escalar con cada tamaño de letra.
+     El hero, las marcas y los marcadores numéricos conservan su composición específica. */
+  --leading-display: 1.05;
+  --leading-heading: 1.08;
+  --leading-subheading: 1.1;
+  --leading-program: 1.15;
+  --leading-lead: 1.35;
+  --leading-intro: 1.45;
+  --leading-body: 1.6;
+  --leading-ui: 1.5;
+  --space-editorial-break: .5em;
+  --space-editorial-paragraph: .75em;
+}
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 24px; }
-body { margin: 0; background: var(--color-mineral); color: var(--color-ink); font-family: var(--font-body), sans-serif; -webkit-font-smoothing: antialiased; }
+body { margin: 0; background: var(--color-mineral); color: var(--color-ink); font-family: var(--font-body), sans-serif; line-height: var(--leading-ui); -webkit-font-smoothing: antialiased; }
 body.has-modal { overflow: hidden; }
 button, a { -webkit-tap-highlight-color: transparent; }
 button { cursor: pointer; font: inherit; }
@@ -36,7 +52,7 @@ button, a { touch-action: manipulation; }
 .desktop-nav a, .desktop-nav button { min-height: 44px; display: inline-flex; align-items: center; font-size: 15px; border-bottom: 1px solid transparent; transition: border-color 180ms ease; white-space: nowrap; }
 .desktop-nav a:hover, .desktop-nav button:hover { border-color: currentColor; }
 .desktop-nav a:active, .desktop-nav button:active { opacity: .7; }
-.button { display: inline-flex; justify-content: center; align-items: center; gap: 20px; min-height: 56px; padding: 14px 28px; background: var(--color-cobalt); color: var(--color-mineral); font-size: 18px; line-height: 1.35; transition: background 180ms ease, transform 180ms var(--ease-out); }
+.button { display: inline-flex; justify-content: center; align-items: center; gap: 20px; min-height: 56px; padding: 14px 28px; background: var(--color-cobalt); color: var(--color-mineral); font-size: 18px; line-height: var(--leading-lead); transition: background 180ms ease, transform 180ms var(--ease-out); }
 .button:hover { background: var(--color-ink); }
 .button:active { transform: translateY(1px); }
 .button svg, .text-link svg { flex-shrink: 0; transition: transform 240ms var(--ease-out); }
@@ -49,7 +65,21 @@ button, a { touch-action: manipulation; }
 .hero-title { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(96px, 10.25vw, 197px); line-height: .93; letter-spacing: -.045em; text-transform: uppercase; color: var(--color-cobalt); width: max-content; }
 .hero-title > span { display: block; width: max-content; background: var(--color-mineral); padding: 0 .18em .03em 0; }
 .accent { color: var(--color-citron); }
-.hero-description { margin: 22px 0 30px; font-size: clamp(20px, 1.8vw, 32px); line-height: 1.35; letter-spacing: -.035em; }
+/*
+ * Sistema de títulos de la home (dos niveles):
+ *   A · apertura en mayúsculas, título solo: Entrenamiento y Torneos (la CTA final y el hero, más grandes).
+ *   B · título en frase, con texto al lado: El Club, Comunidad, Canchas, Instalaciones y el cierre de Entrenamiento
+ *       («Probá. Ajustá. Volvé a jugar.»).
+ */
+:root {
+  --title-a: clamp(72px, 8.6vw, 164px);
+  --title-b: clamp(48px, 5.4vw, 104px);
+}
+main :is(.community-copy, .community-story, .courts-transition, .ronda-facilities-heading) h2, .training-practice-copy h3 { font-size: var(--title-b); line-height: var(--leading-heading); letter-spacing: -.035em; }
+@media (max-width: 767px) {
+  :root { --title-a: clamp(52px, 15vw, 118px); --title-b: clamp(38px, 10.5vw, 72px); }
+}
+.hero-description { margin: 22px 0 30px; font-size: clamp(20px, 1.8vw, 32px); line-height: var(--leading-lead); letter-spacing: -.035em; }
 .hero-reserve { min-width: clamp(225px, 20.5vw, 360px); }
 .text-link { display: flex; align-items: center; justify-content: space-between; gap: 22px; width: fit-content; min-height: 44px; border-bottom: 1px solid currentColor; font-size: 17px; color: var(--color-cobalt); }
 .hero-tour { margin-top: 22px; }
@@ -59,13 +89,13 @@ button, a { touch-action: manipulation; }
 .court-caption { display: flex; align-items: center; gap: 16px; min-height: 64px; padding: 12px var(--gutter) 0 0; color: var(--color-cobalt); }
 .court-line { flex: 1; height: 24px; border-bottom: 1px solid var(--color-cobalt); border-right: 1px solid var(--color-cobalt); }
 .court-number { display: grid; place-items: center; background: var(--color-citron); min-width: 40px; height: 36px; font-family: var(--font-display); font-size: 18px; }
-.court-name { white-space: nowrap; font-size: 13px; }
+.court-name { white-space: nowrap; font-size: 14px; }
 .court-surface-desktop { margin-left: 3px; }
 .court-surface-mobile, .mobile-tour { display: none; }
 .community-intro { display: grid; grid-template-columns: 54% 46%; border-top: 1px solid var(--rule); padding-top: 16px; }
 .community-copy { padding: 16px 28px 32px var(--gutter); }
-.eyebrow { margin: 0; font-size: 12px; font-weight: 500; letter-spacing: .3em; line-height: 1.6; text-transform: uppercase; color: var(--color-cobalt); }
-.community-copy h2 { font-family: var(--font-display); font-weight: 400; color: var(--color-cobalt); font-size: clamp(38px, 3.8vw, 73px); letter-spacing: -.05em; line-height: 1.12; margin: 14px 0 0; }
+.eyebrow { margin: 0; font-size: 12px; font-weight: 500; letter-spacing: .3em; line-height: var(--leading-ui); text-transform: uppercase; color: var(--color-cobalt); }
+.community-copy h2 { font-family: var(--font-display); font-weight: 400; color: var(--color-cobalt); margin: 14px 0 0; }
 .mobile-break { display: none; }
 .community-photo { aspect-ratio: 1.65; overflow: hidden; }
 .community-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 38%; }
@@ -75,8 +105,8 @@ dialog::backdrop { background: #162c46a6; backdrop-filter: blur(4px); }
 .notice-dialog { margin: auto; width: min(540px, calc(100% - 40px)); max-height: calc(100dvh - 40px); }
 .notice-content { padding: 64px 40px 40px; position: relative; }
 .notice-close { position: absolute; top: 12px; right: 12px; }
-.notice-content h2 { font-family: var(--font-display); color: var(--color-cobalt); font-size: clamp(38px, 6vw, 56px); line-height: 1.1; margin: 20px 0; }
-.notice-content > p:not(.eyebrow) { font-size: 17px; line-height: 1.6; margin-bottom: 28px; }
+.notice-content h2 { font-family: var(--font-display); color: var(--color-cobalt); font-size: clamp(38px, 6vw, 56px); line-height: var(--leading-subheading); margin: 20px 0; }
+.notice-content > p:not(.eyebrow) { font-size: 17px; line-height: var(--leading-body); margin-bottom: 28px; }
 dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
 @keyframes dialog-enter { from { opacity: .6; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 .mobile-menu { margin: 0 0 0 auto; width: min(520px, 100%); max-width: 100%; height: 100dvh; max-height: 100dvh; }
@@ -105,7 +135,6 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
   .hero-description { font-size: 22px; margin-top: 28px; }
   .hero-reserve { min-width: 225px; padding: 14px 18px; font-size: 17px; }
   .hero-tour { font-size: 16px; }
-  .community-copy h2 { font-size: 42px; }
 }
 @media (max-width: 1023px) {
   .desktop-nav, .header-reserve { display: none; }
@@ -116,7 +145,7 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
   .site-header { min-height: 56px; padding-block: 5px; gap: 12px; }
   .wordmark { font-size: 31px; }
   .brand { gap: 12px; }
-  .brand-descriptor { font-size: 8px; letter-spacing: .22em; }
+  .brand-descriptor { font-size: 9px; letter-spacing: .2em; }
   .menu-toggle { font-size: 14px; gap: 10px; }
   .menu-toggle svg { width: 25px; }
   .hero { padding: 0; }
@@ -125,15 +154,15 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
   .hero-title, .hero-title > span { max-width: 100%; }
   .hero-title > span { padding: 0; }
   .hero-title::after { content: ""; display: block; height: 14px; width: 55%; border-bottom: 2px solid var(--color-cobalt); border-left: 2px solid var(--color-cobalt); margin-top: 4px; }
-  .hero-description { font-size: clamp(18px, 4.5vw, 27px); line-height: 1.3; margin: 12px 0 14px; }
+  .hero-description { font-size: clamp(18px, 4.5vw, 27px); line-height: var(--leading-lead); margin: 12px 0 14px; }
   .hero-reserve { display: flex; width: 100%; min-width: 0; min-height: 52px; font-size: 18px; }
   .hero-tour { display: none; }
   .hero-figure { margin: 14px 0 0; }
-  .hero-photo { height: auto; aspect-ratio: 2.42; }
+  .hero-photo { height: auto; aspect-ratio: 1.5; }
   .hero-photo img { object-position: center; }
   .court-caption { padding: 6px var(--gutter); min-height: 56px; gap: 10px; }
   .court-number { min-width: 34px; height: 32px; font-size: 17px; }
-  .court-name { font-size: 12px; }
+  .court-name { font-size: 13px; }
   .court-surface-mobile { display: inline; }
   .court-surface-desktop { display: none; }
   .court-line { order: 2; height: 0; border-right: none; min-width: 12px; }
@@ -141,8 +170,8 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
   .mobile-tour svg { width: 18px; }
   .community-intro { display: flex; flex-direction: column; padding-top: 0; border-top: 0; }
   .community-copy { padding: 16px var(--gutter) 12px; }
-  .eyebrow { font-size: 10px; letter-spacing: .28em; }
-  .community-copy h2 { font-size: clamp(33px, 9.5vw, 68px); line-height: 1.13; letter-spacing: -.035em; margin-top: 8px; text-wrap: initial; }
+  .eyebrow { font-size: 11px; letter-spacing: .26em; }
+  .community-copy h2 { margin-top: 8px; text-wrap: initial; }
   .mobile-break { display: block; }
   .community-photo { aspect-ratio: 1.43; }
   .notice-content { padding: 64px 24px 28px; }
@@ -151,34 +180,44 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
 .community-intro { padding-bottom: clamp(48px, 5vw, 96px); }
 .community-copy { grid-column: 1; grid-row: 1; padding-bottom: 0; }
 .community-figure { grid-column: 2; grid-row: 1 / span 2; margin: 0; min-width: 0; }
-.community-caption { display: flex; justify-content: space-between; gap: 16px; padding: 16px var(--gutter) 0 0; font-size: 11px; line-height: 1.5; color: var(--color-cobalt); }
+.community-caption { display: flex; justify-content: space-between; gap: 16px; padding: 16px var(--gutter) 0 0; font-size: 12px; line-height: var(--leading-ui); color: var(--color-cobalt); }
 .club-description { grid-column: 1; grid-row: 2; align-self: end; padding: 36px clamp(32px, 7vw, 140px) 0 var(--gutter); }
-.club-description p { max-width: 42ch; margin: 0; font-size: 17px; line-height: 1.65; text-wrap: pretty; }
-.club-description .club-lead { max-width: 22ch; margin-bottom: 16px; font-size: clamp(23px, 2vw, 32px); line-height: 1.3; letter-spacing: -.035em; }
+.club-description p { max-width: 42ch; margin: 0; font-size: 17px; line-height: var(--leading-body); text-wrap: pretty; }
+.club-description .club-lead { max-width: 22ch; margin-bottom: 16px; font-size: clamp(23px, 2vw, 32px); line-height: var(--leading-lead); letter-spacing: -.035em; }
 .club-community-link { margin-top: 24px; font-size: 16px; }
 .club-community-link:hover svg, .community-next:hover svg { transform: translate(3px, 3px); }
 .community-story { display: grid; grid-template-columns: 54fr 46fr; gap: clamp(32px, 5vw, 96px); padding: clamp(56px, 6.5vw, 124px) var(--gutter); color: var(--color-mineral); background: var(--color-cobalt); }
 .community-story:focus-visible { outline: 2px solid var(--color-mineral); outline-offset: -8px; }
 .community-story .eyebrow { color: var(--color-mineral); }
-.community-story h2 { margin: 32px 0 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(52px, 6vw, 115px); letter-spacing: -.035em; line-height: 1.08; }
+.community-story h2 { margin: 32px 0 0; font-family: var(--font-display); font-weight: 400; }
 .community-court-mark { position: relative; width: clamp(130px, 13vw, 250px); aspect-ratio: 2.2; border: 1px solid #eeece370; margin-top: 48px; }
 .community-court-mark::before, .community-court-mark::after, .community-court-mark span { content: ""; position: absolute; }
 .community-court-mark::before { inset: 14% 0; border-block: 1px solid #eeece370; }
 .community-court-mark::after { inset: 14% 24%; border-inline: 1px solid #eeece370; }
 .community-court-mark span { inset: 0 50%; border-left: 1px solid var(--color-citron); }
 .community-story-copy { padding-top: 48px; max-width: 50ch; }
-.community-story-copy > p { margin: 0; font-size: 18px; line-height: 1.65; text-wrap: pretty; }
-.community-story-copy .community-manifesto { margin-bottom: 24px; font-size: clamp(24px, 2.1vw, 36px); letter-spacing: -.035em; line-height: 1.3; }
+.community-story-copy > p { margin: 0; font-size: 18px; line-height: var(--leading-body); text-wrap: pretty; }
+.community-story-copy .community-manifesto { margin-bottom: 24px; font-size: clamp(24px, 2.1vw, 36px); letter-spacing: -.035em; line-height: var(--leading-lead); }
+/* Pares etiqueta / valor de Comunidad y Torneos: la columna de etiquetas toma el ancho de la más larga (subgrid),
+   así ninguna se parte en dos líneas y todos los valores empiezan a la misma altura. Etiqueta (12 px) y valor
+   (16 px) alineados por la primera línea de base, no por el borde de la caja. */
+:is(.community-moments, .tournaments-formats) { display: grid; grid-template-columns: max-content minmax(0, 1fr); }
+:is(.community-moments, .tournaments-formats) > div { grid-column: 1 / -1; display: grid; grid-template-columns: subgrid; align-items: baseline; }
+:is(.community-moments, .tournaments-formats) dt { white-space: nowrap; }
 .community-moments { margin: 32px 0 0; }
-.community-moments > div { display: grid; grid-template-columns: 120px 1fr; gap: 20px; padding: 20px 0; border-top: 1px solid #eeece370; }
-.community-moments dt { font-size: 14px; font-weight: 500; line-height: 1.6; }
-.community-moments dd { margin: 0; font-size: 16px; line-height: 1.6; text-wrap: pretty; }
+.community-moments > div { column-gap: 20px; padding: 20px 0; border-top: 1px solid #eeece370; }
+/* Etiqueta de la home: una sola regla para los pares etiqueta / valor (Comunidad, Instalaciones, Torneos) y las
+   modalidades de Entrenamiento. Versalitas espaciadas; el color depende del fondo: citrón sobre cobalto o tinta
+   (6,94:1 y 10,7:1) y cobalto sobre mineral (7,76:1), porque el citrón sobre mineral no se lee (1,12:1). */
+:is(.community-moments, .ronda-facilities-list, .tournaments-formats) dt, .training-program-format { font-family: var(--font-body), sans-serif; font-size: 12px; font-weight: 600; letter-spacing: .16em; line-height: var(--leading-ui); text-transform: uppercase; color: var(--color-citron); }
+.training-program-format { color: var(--color-cobalt); }
+.community-moments dd { margin: 0; font-size: 16px; line-height: var(--leading-body); text-wrap: pretty; }
 .community-next { margin-top: 20px; color: var(--color-mineral); font-size: 16px; }
 .community-next:focus-visible { outline-color: var(--color-citron); }
 .courts-transition { display: grid; grid-template-columns: 54fr 46fr; gap: clamp(32px, 5vw, 96px); padding: clamp(48px, 5.5vw, 106px) var(--gutter); }
-.courts-transition h2 { margin: 24px 0 0; font-family: var(--font-display); font-size: clamp(38px, 4vw, 77px); font-weight: 400; line-height: 1.12; letter-spacing: -.035em; color: var(--color-cobalt); }
+.courts-transition h2 { margin: 24px 0 0; font-family: var(--font-display); font-weight: 400; color: var(--color-cobalt); }
 .courts-transition-copy { align-self: end; }
-.courts-transition-copy > p:first-child { max-width: 36ch; margin: 0; font-size: 18px; line-height: 1.65; text-wrap: pretty; }
+.courts-transition-copy > p:first-child { max-width: 36ch; margin: 0; font-size: 18px; line-height: var(--leading-body); text-wrap: pretty; }
 .courts-index { display: flex; flex-wrap: wrap; gap: 16px 24px; margin: 28px 0 0; padding-top: 20px; border-top: 1px solid var(--rule); font-size: 14px; color: var(--color-cobalt); }
 .courts-index b { font-family: var(--font-display); font-size: 22px; font-weight: 400; }
 
@@ -188,49 +227,49 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
   .club-description { padding-right: 32px; }
   .community-caption { flex-direction: column; gap: 2px; }
   .community-story { grid-template-columns: 1fr 1fr; gap: 32px; }
-  .community-story h2 { font-size: clamp(47px, 5.5vw, 57px); }
   .community-story-copy { padding-top: 0; }
+  .community-moments { display: block; }
   .community-moments > div { grid-template-columns: 1fr; gap: 8px; }
 }
 @media (max-width: 767px) {
   .community-intro { padding-bottom: 40px; }
   .community-copy { padding-bottom: 12px; }
-  .community-caption { padding: 12px var(--gutter) 0; font-size: 10px; gap: 8px; }
+  .community-caption { padding: 12px var(--gutter) 0; font-size: 12px; gap: 8px; }
   .club-description { padding: 28px var(--gutter) 0; }
-  .club-description p { font-size: 18px; line-height: 1.6; }
+  .club-description p { font-size: 18px; }
   .club-description .club-lead { font-size: 25px; margin-bottom: 16px; }
   .club-community-link { margin-top: 20px; }
   .community-story { grid-template-columns: 1fr; gap: 32px; padding-block: 44px 40px; }
   .community-story-heading { position: relative; }
-  .community-story h2 { margin-top: 24px; font-size: clamp(42px, 11.5vw, 82px); }
+  .community-story h2 { margin-top: 24px; }
   .community-court-mark { display: none; }
   .community-story-copy { padding-top: 0; max-width: 52ch; }
   .community-story-copy .community-manifesto { font-size: 25px; margin-bottom: 20px; }
   .community-moments { margin-top: 28px; }
+  .community-moments { display: block; }
   .community-moments > div { grid-template-columns: 1fr; gap: 8px; padding-block: 18px; }
-  .community-moments dt { font-size: 13px; }
   .community-moments dd { font-size: 18px; }
   .community-next { margin-top: 16px; }
   .courts-transition { grid-template-columns: 1fr; gap: 24px; padding-block: 40px; }
-  .courts-transition .eyebrow { max-width: 29ch; }
-  .courts-transition h2 { margin-top: 20px; font-size: clamp(32px, 8.7vw, 65px); }
+  .courts-transition h2 { margin-top: 20px; }
   .courts-transition-copy > p:first-child { max-width: 45ch; }
   .courts-index { justify-content: space-between; gap: 12px; margin-top: 24px; }
+}
+/* Colores forzados: los botones pierden su fondo; un borde del sistema los mantiene reconocibles como botones. */
+@media (forced-colors: active) {
+  .button { border: 1px solid ButtonText; }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
 
-/* Editorial sentence breaks preserve readable units across viewport widths. */
-.editorial-break { display: block; margin-top: .65em; }
-.community-story-copy > .editorial-continuation { margin-top: .75em; }
-.training-intro .editorial-break { margin-top: .35em; }
-@media (max-width: 767px) {
-  .editorial-break { margin-top: .5em; }
-  .training-intro .editorial-break { margin-top: .3em; }
-}
-/* Colores forzados: los botones pierden su fondo; un borde del sistema los mantiene reconocibles como botones. */
-@media (forced-colors: active) {
-  .button { border: 1px solid ButtonText; }
+/* La separación entre ideas es independiente del interlineado dentro de cada frase. */
+.editorial-break { display: block; margin-top: var(--space-editorial-break); }
+.community-story-copy > .editorial-continuation { margin-top: var(--space-editorial-paragraph); }
+
+/* Pantallas de 320 px: menos espaciado entre letras para que las etiquetas largas entren en una línea. Los ajustes
+   de Instalaciones y Entrenamiento viven en sus hojas, que se cargan después. */
+@media (max-width: 359px) {
+  .eyebrow { letter-spacing: .12em; }
 }

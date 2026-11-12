@@ -13,13 +13,13 @@
 
 /* Apertura */
 .ronda-booking-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 30ch); align-items: end; gap: 48px; padding: clamp(36px, 4vw, 64px) var(--gutter) 0; }
-.ronda-booking-title { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(64px, 7.6vw, 140px); line-height: .9; letter-spacing: -.045em; text-transform: uppercase; color: var(--color-cobalt); overflow-wrap: break-word; }
+.ronda-booking-title { margin: 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(64px, 7.6vw, 140px); line-height: var(--leading-display); letter-spacing: -.045em; text-transform: uppercase; color: var(--color-cobalt); overflow-wrap: break-word; }
 .ronda-booking-dot { color: var(--color-citron); }
 /* Los títulos reciben el foco por programa (al confirmar y al volver): no son controles, no llevan anillo. */
 .ronda-booking-title:focus, .ronda-confirm-title:focus { outline: none; }
-.ronda-booking-demo { margin: 0 0 10px; font-size: 15px; line-height: 1.55; }
-.ronda-booking-demo strong { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 500; letter-spacing: .28em; text-transform: uppercase; color: var(--color-cobalt); }
-.ronda-booking-noscript { margin: 24px var(--gutter) 0; padding: 16px 20px; max-width: 60ch; background: var(--color-citron); font-size: 16px; line-height: 1.5; }
+.ronda-booking-demo { margin: 0 0 10px; font-size: 15px; line-height: var(--leading-body); }
+.ronda-booking-demo strong { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 500; line-height: var(--leading-ui); letter-spacing: .28em; text-transform: uppercase; color: var(--color-cobalt); }
+.ronda-booking-noscript { margin: 24px var(--gutter) 0; padding: 16px 20px; max-width: 60ch; background: var(--color-citron); font-size: 16px; line-height: var(--leading-ui); }
 
 /* Marcadores del esqueleto: bloques planos, sin animación. */
 .ronda-booking-placeholder { display: block; background: var(--ronda-placeholder); }
@@ -48,11 +48,11 @@ button.ronda-booking-day:hover .ronda-booking-day-number { text-decoration: unde
 .ronda-booking-placeholder.is-day { width: 38px; height: 36px; }
 
 /* Escenario: plano protagonista, horarios y resumen */
-.ronda-booking-lead { margin: clamp(44px, 4.4vw, 72px) var(--gutter) 0; max-width: 46ch; font-size: clamp(20px, 1.6vw, 26px); line-height: 1.35; letter-spacing: -.03em; }
+.ronda-booking-lead { margin: clamp(44px, 4.4vw, 72px) var(--gutter) 0; max-width: 46ch; font-size: clamp(20px, 1.6vw, 26px); line-height: var(--leading-lead); letter-spacing: -.03em; }
 .ronda-booking-stage { display: grid; grid-template-columns: minmax(0, 1fr); gap: clamp(48px, 6vw, 112px); align-items: start; padding: clamp(24px, 2.4vw, 40px) var(--gutter) clamp(72px, 7vw, 128px); }
 .ronda-booking-where, .ronda-booking-side { min-width: 0; }
 .ronda-booking-panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; margin-bottom: 18px; }
-.ronda-booking-question { margin: 0; font-size: clamp(22px, 1.7vw, 28px); font-weight: 500; line-height: 1.25; letter-spacing: -.035em; color: var(--color-ink); }
+.ronda-booking-question { margin: 0; font-size: clamp(22px, 1.7vw, 28px); font-weight: 500; line-height: var(--leading-lead); letter-spacing: -.035em; color: var(--color-ink); }
 .ronda-booking-meta { margin: 0; font-size: 13px; color: var(--ronda-muted); text-align: right; }
 .ronda-booking-meta-note { display: block; }
 .ronda-booking-placeholder.is-meta { width: 88px; height: 12px; }
@@ -135,8 +135,8 @@ button.ronda-booking-day:hover .ronda-booking-day-number { text-decoration: unde
 .ronda-plan-tags { position: relative; height: 112px; }
 .ronda-plan-tag { position: absolute; top: 0; left: var(--plan-x); transform: translateX(-50%); display: grid; justify-items: center; gap: 4px; min-width: 120px; padding: 10px 8px 8px; text-align: center; color: var(--color-ink); }
 .ronda-plan-tag-number { display: inline-grid; place-items: center; min-width: 46px; height: 42px; padding: 0 6px; font-family: var(--font-display); font-size: 30px; line-height: 1; color: var(--color-cobalt); }
-.ronda-plan-tag-name { font-size: 18px; font-weight: 500; line-height: 1.3; letter-spacing: -.02em; }
-.ronda-plan-tag-status { font-size: 13px; line-height: 1.4; color: var(--ronda-muted); }
+.ronda-plan-tag-name { font-size: 18px; font-weight: 500; line-height: var(--leading-lead); letter-spacing: -.02em; }
+.ronda-plan-tag-status { font-size: 13px; line-height: var(--leading-ui); color: var(--ronda-muted); }
 button.ronda-plan-tag { border: 0; background: none; font: inherit; }
 .ronda-plan-tag-number { transition: background 160ms ease; }
 .ronda-plan-tag[aria-pressed="true"] .ronda-plan-tag-number { background: var(--color-citron); color: var(--color-ink); }
@@ -198,7 +198,7 @@ button.ronda-booking-hour:is(.is-free, .is-alt):hover .ronda-booking-hour-number
 .ronda-booking-hour[aria-pressed="true"] .ronda-booking-hour-number { color: var(--color-mineral); text-decoration: none; }
 .ronda-booking-hour[aria-pressed="true"] .ronda-booking-hour-count { color: var(--color-mineral); }
 .ronda-booking-hour:focus-visible { outline-offset: -2px; }
-.ronda-booking-empty { margin: 0; font-size: 16px; line-height: 1.5; }
+.ronda-booking-empty { margin: 0; font-size: 16px; line-height: var(--leading-ui); }
 
 /* Vista previa: sin horario elegido, pasar o enfocar un horario raya en el plano las canchas sin lugar. */
 .ronda-booking-stage:not(:has(.ronda-booking-hour[aria-pressed="true"])):has(.ronda-booking-hour[data-busy~="01"]:is(:hover, :focus-visible)) [data-court-id="01"] .c-hatch,
@@ -211,13 +211,13 @@ button.ronda-booking-hour:is(.is-free, .is-alt):hover .ronda-booking-hour-number
 
 /* Aviso de conflicto: qué se conservó, qué se liberó y alternativas de un toque. */
 .ronda-booking-notice { display: grid; gap: 12px; margin-top: 24px; padding: 18px 22px 20px; background: var(--color-citron); color: var(--color-ink); }
-.ronda-booking-notice p { margin: 0; font-size: 17px; line-height: 1.4; }
+.ronda-booking-notice p { margin: 0; font-size: 17px; line-height: var(--leading-body); }
 .ronda-booking-notice-options { display: flex; flex-wrap: wrap; gap: 8px 28px; }
 .ronda-booking-notice-options button { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0; border: 0; border-bottom: 1px solid var(--color-ink); background: none; color: inherit; font: inherit; font-size: 16px; font-weight: 500; }
 .ronda-booking-notice-options button:hover svg { transform: translateX(3px); }
 .ronda-booking-notice-options svg { transition: transform 240ms var(--ease-out); }
 .ronda-booking-notice-options button:focus-visible { outline-color: var(--color-ink); outline-offset: 3px; }
-.ronda-booking-correction { margin: 24px var(--gutter) 0; padding: 14px 18px; max-width: 64ch; background: var(--color-citron); font-size: 15px; line-height: 1.5; }
+.ronda-booking-correction { margin: 24px var(--gutter) 0; padding: 14px 18px; max-width: 64ch; background: var(--color-citron); font-size: 15px; line-height: var(--leading-ui); }
 
 /* Resumen («Tu turno») */
 .ronda-booking-ticket { margin-top: clamp(40px, 3.6vw, 56px); padding-top: 26px; border-top: 1px solid var(--rule); }
@@ -227,18 +227,18 @@ button.ronda-booking-hour:is(.is-free, .is-alt):hover .ronda-booking-hour-number
 .ronda-booking-placeholder.is-value { width: 96px; height: clamp(34px, 2.8vw, 46px); }
 button.ronda-booking-summary-item { border: 0; background: none; color: inherit; font: inherit; text-align: left; }
 .ronda-booking-summary-value { display: flex; align-items: flex-end; height: clamp(34px, 2.8vw, 46px); font-family: var(--font-display); font-size: clamp(34px, 2.8vw, 46px); line-height: 1; letter-spacing: -.02em; text-transform: uppercase; color: var(--color-cobalt); white-space: nowrap; }
-.ronda-booking-summary-item.is-empty .ronda-booking-summary-value { font-family: var(--font-body); font-size: 19px; line-height: 1.5; letter-spacing: -.02em; text-transform: none; color: var(--ronda-muted); }
+.ronda-booking-summary-item.is-empty .ronda-booking-summary-value { font-family: var(--font-body); font-size: 19px; line-height: var(--leading-ui); letter-spacing: -.02em; text-transform: none; color: var(--ronda-muted); }
 button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 7px; }
-.ronda-booking-summary-caption { margin: 12px 0 0; font-size: 14px; line-height: 1.5; }
+.ronda-booking-summary-caption { margin: 12px 0 0; font-size: 14px; line-height: var(--leading-ui); }
 .ronda-booking-placeholder.is-caption { width: 180px; height: 12px; margin-block: 4px; }
 .ronda-booking-confirm { margin-top: 24px; }
-.ronda-booking-fine { margin: 14px 0 0; font-size: 13px; line-height: 1.5; color: var(--ronda-muted); }
+.ronda-booking-fine { margin: 14px 0 0; font-size: 13px; line-height: var(--leading-ui); color: var(--ronda-muted); }
 
 /* Pie */
 .ronda-booking-footer { display: flex; align-items: end; justify-content: space-between; gap: 24px 48px; padding: 26px var(--gutter) 34px; border-top: 1px solid var(--rule); }
 .ronda-booking-footer .studio-credit { color: var(--color-cobalt); }
 /* En la columna derecha el aviso se alinea a la derecha; apilado en celular, a la izquierda. */
-.ronda-booking-footer-notice { max-width: 58ch; margin: 0 0 3px; font-size: 13px; line-height: 1.6; text-align: right; text-wrap: balance; }
+.ronda-booking-footer-notice { max-width: 58ch; margin: 0 0 3px; font-size: 13px; line-height: var(--leading-body); text-align: right; text-wrap: balance; }
 
 /* Dos columnas desde 1024 px: el plano a la izquierda; horarios y resumen a la derecha. En este rango
    la planta no deja más de ~375 px al panel, así que la grilla de horarios se compacta (celdas ≥ 44 px). */
@@ -349,11 +349,11 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
 .ronda-confirm .eyebrow { margin: 0; color: var(--color-mineral); }
 .ronda-confirm :focus-visible, .ronda-confirm .button:focus-visible { outline-color: var(--color-mineral); }
 .ronda-confirm-head { grid-area: head; }
-.ronda-confirm-title { margin: 18px 0 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(48px, 14.6vw, 100px); line-height: .92; letter-spacing: -.04em; text-transform: uppercase; overflow-wrap: break-word; }
+.ronda-confirm-title { margin: 18px 0 0; font-family: var(--font-display); font-weight: 400; font-size: clamp(48px, 14.6vw, 100px); line-height: var(--leading-display); letter-spacing: -.04em; text-transform: uppercase; overflow-wrap: break-word; }
 .ronda-confirm-photo { grid-area: photo; margin: 32px calc(-1 * var(--gutter)) 0; }
 .ronda-confirm-image { position: relative; aspect-ratio: 4 / 3; background: color-mix(in srgb, var(--color-mineral) 12%, var(--color-cobalt)); }
 .ronda-confirm-image img { object-fit: cover; }
-.ronda-confirm-photo figcaption { display: flex; align-items: center; gap: 14px; padding: 14px var(--gutter) 0; font-size: 13px; line-height: 1.4; }
+.ronda-confirm-photo figcaption { display: flex; align-items: center; gap: 14px; padding: 14px var(--gutter) 0; font-size: 13px; line-height: var(--leading-ui); }
 .ronda-confirm-badge { display: inline-grid; place-items: center; min-width: 36px; height: 32px; padding: 0 4px; background: var(--color-citron); color: var(--color-ink); font-family: var(--font-display); font-size: 17px; line-height: 1; }
 .ronda-confirm-rest { grid-area: rest; }
 .ronda-confirm-score { display: grid; grid-template-columns: 1.25fr .95fr 1fr; margin: 32px 0 0; }
@@ -362,11 +362,11 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
 .ronda-confirm-score dt { font-size: 11px; font-weight: 500; letter-spacing: .2em; text-transform: uppercase; color: var(--confirm-soft); }
 .ronda-confirm-score dd { margin: 10px 0 0; }
 .ronda-confirm-score strong { display: block; font-family: var(--font-display); font-weight: 400; font-size: clamp(28px, 2.8vw, 46px); line-height: 1; letter-spacing: -.02em; text-transform: uppercase; overflow-wrap: anywhere; }
-.ronda-confirm-score span { display: block; margin-top: 8px; font-size: 12px; line-height: 1.4; color: var(--confirm-soft); }
+.ronda-confirm-score span { display: block; margin-top: 8px; font-size: 12px; line-height: var(--leading-ui); color: var(--confirm-soft); }
 .ronda-confirm-way { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px 28px; align-items: center; margin-top: 32px; padding-top: 28px; border-top: 1px solid var(--confirm-rule); }
 .ronda-confirm-way .eyebrow { margin-bottom: 10px; font-size: 11px; }
-.ronda-confirm-way p { margin: 0; font-size: 15px; line-height: 1.55; }
-.ronda-confirm-note { margin: 32px 0 0; max-width: 52ch; font-size: 15px; line-height: 1.55; color: var(--confirm-soft); }
+.ronda-confirm-way p { margin: 0; font-size: 15px; line-height: var(--leading-body); }
+.ronda-confirm-note { margin: 32px 0 0; max-width: 52ch; font-size: 15px; line-height: var(--leading-body); color: var(--confirm-soft); }
 .ronda-confirm-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 20px 36px; margin-top: 32px; }
 .ronda-confirm-actions .button { width: 100%; justify-content: space-between; background: var(--color-mineral); color: var(--color-cobalt); }
 .ronda-confirm-actions .button:hover { background: var(--color-citron); color: var(--color-ink); }
@@ -416,7 +416,7 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
     transform: translateY(100%); visibility: hidden; transition: transform 220ms var(--ease-out), visibility 0s linear 220ms;
   }
   .ronda-booking-bar[data-visible="true"] { transform: none; visibility: visible; transition: transform 220ms var(--ease-out), visibility 0s; }
-  .ronda-booking-bar-text { min-width: 0; margin: 0; font-family: var(--font-display); font-size: 24px; line-height: 1.1; letter-spacing: -.01em; text-transform: uppercase; }
+  .ronda-booking-bar-text { min-width: 0; margin: 0; font-family: var(--font-display); font-size: 24px; line-height: var(--leading-subheading); letter-spacing: -.01em; text-transform: uppercase; }
   .ronda-booking-bar .button { flex-shrink: 0; min-height: 48px; padding: 10px 18px; font-size: 16px; background: var(--color-mineral); color: var(--color-cobalt); }
   .ronda-booking-bar .button:focus-visible { outline-color: var(--color-mineral); }
   /* Con la barra a la vista, el final de la página no queda tapado. */

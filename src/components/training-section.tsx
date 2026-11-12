@@ -1,6 +1,7 @@
 import Image from "next/image";
-import { ArrowRightIcon, TennisBallIcon } from "@phosphor-icons/react/ssr";
+import { TennisBallIcon } from "@phosphor-icons/react/ssr";
 import { TrainingInfoButton } from "@/components/experience-actions";
+import { TrainingAccordion } from "./training-accordion";
 import "./training-section.css";
 
 const programs = [
@@ -48,17 +49,7 @@ export function TrainingSection() {
 
       <div className="training-programs">
         <p className="training-programs-label">Tres formas de entrar en juego</p>
-        {programs.map((program, index) => <details className="training-program" name="ronda-training-program" key={program.id} open={index === 0}>
-          <summary>
-            <span className="training-program-number" aria-hidden="true">0{index + 1}</span>
-            <h3><span className="training-program-format">{program.format}</span>{program.title}</h3>
-            <span className="training-program-toggle" aria-hidden="true" />
-          </summary>
-          <div className="training-program-body">
-            <p>{program.description}</p>
-            <p className="training-program-focus">{program.focus}</p>
-          </div>
-        </details>)}
+        <TrainingAccordion programs={programs} />
         <TrainingInfoButton className="training-info" />
       </div>
     </div>
@@ -66,9 +57,8 @@ export function TrainingSection() {
     <div className="training-practice">
       <div className="training-practice-copy">
         <p className="eyebrow">Del ejercicio al punto</p>
-        <h3>Probá. Ajustá.<br />Volvé a jugar<span className="accent" aria-hidden="true">.</span></h3>
+        <h3>Probá. Ajustá.<br />Volvé a jugar.</h3>
         <p>Mejorar también es darte espacio para probar.{" "}<span className="editorial-break">Entendé el gesto, practicalo y encontrá cómo llevarlo a tu juego.</span></p>
-        <p className="training-sequence"><span>Técnica</span><ArrowRightIcon size={22} weight="light" aria-hidden="true" /><span>Práctica</span><ArrowRightIcon size={22} weight="light" aria-hidden="true" /><span>Juego</span></p>
       </div>
       <figure className="training-action">
         <Image src="/images/training/practice.webp" width={1122} height={1402} alt="Una jugadora termina un golpe de derecha en movimiento sobre la arcilla, con otro jugador al fondo." sizes="(min-width: 1024px) 28vw, (min-width: 768px) 35vw, 50vw" quality={85} />

@@ -6,7 +6,7 @@ export function CommunityIntro() {
   return <section className="community-intro" id="el-club" tabIndex={-1} aria-labelledby="community-title">
     <div className="community-copy">
       <p className="eyebrow">La vida en {site.name}</p>
-      <h2 id="community-title">El partido sigue<br className="mobile-break" /> fuera de la cancha<span className="accent" aria-hidden="true">.</span></h2>
+      <h2 id="community-title">El partido sigue<br className="mobile-break" /> fuera de la cancha.</h2>
     </div>
     <figure className="community-figure">
       <div className="community-photo">

@@ -10,10 +10,6 @@ function CourtDetails({ court }: { court: Court }) {
       <h4>{court.character}</h4>
       <p>{court.description.map((line, index) => index === 0 ? line : <Fragment key={index}>{" "}<span className="editorial-break">{line}</span></Fragment>)}</p>
     </div>
-    <dl className="ronda-court-specs">
-      <div><dt>Superficie</dt><dd>{court.surface}<span>{court.surfaceDetail}</span></dd></div>
-      <div><dt>El espacio</dt><dd>{court.setting}<span>{court.lighting}</span></dd></div>
-    </dl>
     <ReserveLink className="ronda-court-reserve" court={{ id: court.id, name: court.name, surface: court.surface }} />
   </div>;
 }
@@ -31,7 +27,7 @@ function CourtArticle({ court, layout }: { court: Court; layout: keyof typeof im
     <header className="ronda-court-heading">
       <span className="ronda-court-index"><span className="sr-only">Cancha </span>{court.id}</span>
       <h3 id={`${court.anchor}-title`}>{court.name}</h3>
-      <span className="ronda-court-surface">{court.surface}</span>
+      <span className="ronda-court-surface">{court.surface} · {court.surfaceDetail}</span>
     </header>
     <div className="ronda-court-image">
       <Image src={court.image.src} width={court.image.width} height={court.image.height} alt={court.image.alt} sizes={imageSizes[layout]} quality={85} />
@@ -44,10 +40,8 @@ function CourtArticle({ court, layout }: { court: Court; layout: keyof typeof im
 export function CourtsSection() {
   const [central, ...clayCourts] = courts;
   return <section className="ronda-courts" id="canchas" tabIndex={-1} aria-labelledby="courts-title">
-    <div className="ronda-courts-topline">
-      <h2 className="eyebrow" id="courts-title">Las canchas · Elegí tu terreno</h2>
-      <a className="text-link" href="#instalaciones">Conocé las instalaciones <span aria-hidden="true">↓</span></a>
-    </div>
+    {/* La entrada de Canchas ya la presenta la transición anterior: el título queda para lectores de pantalla. */}
+    <div className="ronda-courts-topline"><h2 className="sr-only" id="courts-title">Las canchas</h2></div>
     <CourtArticle court={central} layout="featured" />
     <div className="ronda-clay-spread">{clayCourts.map((court, index) => <CourtArticle key={court.id} court={court} layout={index === 0 ? "wide" : "narrow"} />)}</div>
   </section>;

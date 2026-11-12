@@ -6,7 +6,6 @@ export function TournamentsSection() {
     <header className="tournaments-heading">
       <div className="tournaments-topline">
         <p className="eyebrow">Torneos y encuentros</p>
-        <span>Singles / Dobles</span>
       </div>
       <h2 id="tournaments-title">Cada cruce,<br />otra historia<span className="accent" aria-hidden="true">.</span></h2>
     </header>

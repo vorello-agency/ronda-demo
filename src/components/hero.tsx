@@ -13,8 +13,7 @@ export function Hero() {
     </div>
     <figure className="hero-figure">
       <picture className="hero-photo">
-        <source media="(max-width: 767px)" srcSet="/images/hero-mobile-480.webp 480w, /images/hero-mobile-960.webp 960w" sizes="100vw" />
-        {/* Art-directed picture: locally prepared crops, fixed dimensions and explicit priority. */}
+        {/* Una sola foto en todos los anchos: en celular se muestra entera (3:2) en lugar de una franja recortada. */}
         <img src="/images/hero-1536.webp" srcSet="/images/hero-960.webp 960w, /images/hero-1536.webp 1536w" sizes="(min-width: 768px) 72vw, 100vw" width={1536} height={1024} alt="Dos jugadores en una cancha de arcilla, frente al pabellón de hormigón y madera del club." fetchPriority="high" loading="eager" />
       </picture>
       <figcaption className="court-caption" id="cancha-02" tabIndex={-1}>

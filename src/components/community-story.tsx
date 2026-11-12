@@ -6,7 +6,7 @@ export function CommunityStory() {
     <section className="community-story" id="comunidad" tabIndex={-1} aria-labelledby="community-story-title">
       <div className="community-story-heading">
         <p className="eyebrow">Comunidad · A nuestro ritmo</p>
-        <h2 id="community-story-title">Distintos juegos.<br />Un mismo club<span className="accent" aria-hidden="true">.</span></h2>
+        <h2 id="community-story-title">Distintos niveles.<br />Un mismo club.</h2>
         <div className="community-court-mark" aria-hidden="true"><span /></div>
       </div>
       <div className="community-story-copy">
