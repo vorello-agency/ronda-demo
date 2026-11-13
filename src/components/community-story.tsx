@@ -1,4 +1,5 @@
 import { ArrowDownRightIcon } from "@phosphor-icons/react/dist/ssr";
+import { CommunityRally } from "@/components/community-rally";
 import { site } from "@/config/site";
 
 export function CommunityStory() {
@@ -7,7 +8,7 @@ export function CommunityStory() {
       <div className="community-story-heading">
         <p className="eyebrow">Comunidad · A nuestro ritmo</p>
         <h2 id="community-story-title">Distintos niveles.<br />Un mismo club.</h2>
-        <div className="community-court-mark" aria-hidden="true"><span /></div>
+        <CommunityRally />
       </div>
       <div className="community-story-copy">
         <p className="community-manifesto">Venís por el tenis.<br />Volvés por lo que se arma alrededor.</p>

@@ -190,11 +190,23 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
 .community-story:focus-visible { outline: 2px solid var(--color-mineral); outline-offset: -8px; }
 .community-story .eyebrow { color: var(--color-mineral); }
 .community-story h2 { margin: 32px 0 0; font-family: var(--font-display); font-weight: 400; }
-.community-court-mark { position: relative; width: clamp(130px, 13vw, 250px); aspect-ratio: 2.2; border: 1px solid #eeece370; margin-top: 48px; }
-.community-court-mark::before, .community-court-mark::after, .community-court-mark span { content: ""; position: absolute; }
-.community-court-mark::before { inset: 14% 0; border-block: 1px solid #eeece370; }
-.community-court-mark::after { inset: 14% 24%; border-inline: 1px solid #eeece370; }
-.community-court-mark span { inset: 0 50%; border-left: 1px solid var(--color-citron); }
+/* Peloteo isométrico (misma proyección que el plano de reservas), en vidrio: rellenos translúcidos y bordes claros
+   sobre el cobalto; el único acento es la pelota. El movimiento vive en community-rally.tsx. */
+.community-rally { --rally-line: #eeece3; --rally-edge: #eeece3b3; display: block; width: clamp(320px, 42vw, 640px); height: auto; margin-top: 40px; overflow: visible; }
+.community-rally :is(rect, polygon, polyline, .rally-lines *) { vector-effect: non-scaling-stroke; }
+.community-rally :is(.rally-out, .rally-side-west, .rally-side-south, .rally-net) { stroke: var(--rally-edge); stroke-width: 1px; stroke-linejoin: round; }
+.rally-out { fill: #eeece30f; }
+.rally-in { fill: #eeece314; }
+.rally-side-west { fill: #eeece324; }
+.rally-side-south { fill: #162c4640; }
+.rally-lines { fill: none; stroke: var(--rally-line); stroke-width: 1px; }
+.rally-mark { fill: var(--rally-line); }
+.rally-player-shadow, .rally-ball-shadow { fill: var(--color-ink); opacity: .35; }
+.rally-net { fill: #eeece326; }
+.rally-tape { fill: none; stroke: var(--rally-line); stroke-width: 1.5px; }
+.rally-player { stroke: var(--color-mineral); stroke-width: 6.5; stroke-linecap: round; }
+.rally-ball { fill: var(--color-citron); }
+.rally-trail { fill: none; stroke: var(--color-citron); stroke-width: 1.5px; stroke-linecap: round; stroke-linejoin: round; }
 .community-story-copy { padding-top: 48px; max-width: 50ch; }
 .community-story-copy > p { margin: 0; font-size: 18px; line-height: var(--leading-body); text-wrap: pretty; }
 .community-story-copy .community-manifesto { margin-bottom: 24px; font-size: clamp(24px, 2.1vw, 36px); letter-spacing: -.035em; line-height: var(--leading-lead); }
@@ -242,7 +254,7 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
   .community-story { grid-template-columns: 1fr; gap: 32px; padding-block: 44px 40px; }
   .community-story-heading { position: relative; }
   .community-story h2 { margin-top: 24px; }
-  .community-court-mark { display: none; }
+  .community-rally { width: min(100%, 440px); margin-top: 28px; }
   .community-story-copy { padding-top: 0; max-width: 52ch; }
   .community-story-copy .community-manifesto { font-size: 25px; margin-bottom: 20px; }
   .community-moments { margin-top: 28px; }
