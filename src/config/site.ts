@@ -13,13 +13,17 @@ export const navigation: readonly ({ label: string; href: string } | { label: st
   { label: "El club", href: "#el-club" },
   { label: "Canchas", href: "#canchas" },
   { label: "Entrenamiento", href: "#entrenamiento" },
-  { label: "Comunidad", href: "#comunidad" },
+  { label: "Torneos", href: "#torneos" },
 ] as const;
 
+/** Todas las secciones en el orden en que aparecen en la home; la grilla de dos columnas las agrupa de a pares. */
 export const footerNavigation = [
-  ...navigation.flatMap((item) => "href" in item ? [item] : []),
-  { label: "Torneos y encuentros", href: "#torneos" },
+  { label: "El club", href: "#el-club" },
+  { label: "Comunidad", href: "#comunidad" },
+  { label: "Canchas", href: "#canchas" },
   { label: "Instalaciones", href: "#instalaciones" },
+  { label: "Entrenamiento", href: "#entrenamiento" },
+  { label: "Torneos", href: "#torneos" },
 ] as const;
 
 export const notices = {

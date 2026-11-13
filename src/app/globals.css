@@ -16,6 +16,7 @@
 
 :root {
   --gutter: clamp(24px, 4.2vw, 88px);
+  --header-height: 74px;
   --rule: #263f9e55;
   --ease-out: cubic-bezier(.22, 1, .36, 1);
   /* Interlineados compartidos por función, sin unidades para escalar con cada tamaño de letra.
@@ -44,7 +45,11 @@ button, a { touch-action: manipulation; }
 ::selection { background: var(--color-citron); color: var(--color-ink); }
 .skip-link { position: fixed; z-index: 20; left: 20px; top: 12px; padding: 16px 22px; background: var(--color-ink); color: white; transform: translateY(-150%); }
 .skip-link:focus { transform: none; }
-.site-header { min-height: 74px; padding: 14px var(--gutter); display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--rule); color: var(--color-cobalt); }
+.site-header { min-height: var(--header-height); padding: 14px var(--gutter); display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--rule); color: var(--color-cobalt); }
+/* Solo la home fija su header: /reservar es una página de tarea y en mobile ya tiene una barra fija abajo.
+   El fondo sólido evita que el contenido se lea por detrás, y las anclas descuentan el alto del header. */
+.site-header:not(.ronda-booking-header) { position: sticky; top: 0; z-index: 10; background: var(--color-mineral); }
+html:has(.site-header:not(.ronda-booking-header)) { scroll-padding-top: calc(var(--header-height) + 24px); }
 .brand { display: flex; align-items: center; min-height: 44px; gap: clamp(16px, 2vw, 30px); flex-shrink: 0; }
 .wordmark { font-family: var(--font-display); font-size: clamp(34px, 3.2vw, 48px); line-height: 1; text-transform: uppercase; letter-spacing: -.035em; }
 .brand-descriptor { font-size: 12px; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; }
@@ -143,8 +148,8 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
   .menu-toggle { display: flex; align-items: center; gap: 14px; min-height: 44px; font-size: 16px; }
 }
 @media (max-width: 767px) {
-  :root { --gutter: clamp(20px, 6vw, 40px); }
-  .site-header { min-height: 56px; padding-block: 5px; gap: 12px; }
+  :root { --gutter: clamp(20px, 6vw, 40px); --header-height: 56px; }
+  .site-header { padding-block: 5px; gap: 12px; }
   .wordmark { font-size: 31px; }
   .brand { gap: 12px; }
   .brand-descriptor { font-size: 9px; letter-spacing: .2em; }
