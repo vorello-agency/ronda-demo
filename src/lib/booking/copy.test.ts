@@ -37,7 +37,7 @@ describe("formatos", () => {
 
   it("los nombres de cancha salen de courts.ts", () => {
     for (const court of courts) assert.equal(courtName(court.id), court.name);
-    assert.equal(alternativeLabel({ court: "02", hour: 19 }), "Jardín a las 19:00");
+    assert.equal(alternativeLabel({ court: "02", hour: 19 }), "Central a las 19:00");
   });
 });
 
@@ -81,7 +81,7 @@ describe("textos de avisos y correcciones", () => {
   });
 
   it("los avisos de conflicto dicen qué se conservó y qué se liberó", () => {
-    assert.equal(noticeText(notices[0]), "Central está ocupada a las 19:00. Elegí otro horario para Central.");
-    assert.equal(noticeText(notices[1]), "Central está ocupada a las 19:00. Elegí otra cancha para ese horario.");
+    assert.equal(noticeText(notices[0]), "Club está ocupada a las 19:00. Elegí otro horario para Club.");
+    assert.equal(noticeText(notices[1]), "Club está ocupada a las 19:00. Elegí otra cancha para ese horario.");
   });
 });

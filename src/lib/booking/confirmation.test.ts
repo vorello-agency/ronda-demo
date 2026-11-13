@@ -39,9 +39,9 @@ describe("reservas de la visita en el plano", () => {
 describe("barra fija", () => {
   const date = FUTURE_DATES[0];
   it("con cancha y hora resume el turno; si falta algo, lo dice", () => {
-    assert.equal(barText({ date, court: "02", hour: 19 }, NOW), "Jardín · Sáb 07 · 19:00");
-    assert.equal(barText({ date: today(NOW), court: "02", hour: 19 }, NOW), "Jardín · Hoy · 19:00");
-    assert.equal(barText({ date, court: "01", hour: null }, NOW), "Central · falta la hora");
+    assert.equal(barText({ date, court: "02", hour: 19 }, NOW), "Central · Sáb 07 · 19:00");
+    assert.equal(barText({ date: today(NOW), court: "02", hour: 19 }, NOW), "Central · Hoy · 19:00");
+    assert.equal(barText({ date, court: "01", hour: null }, NOW), "Club · falta la hora");
     assert.equal(barText({ date, court: null, hour: 9 }, NOW), "09:00 · falta la cancha");
   });
 
@@ -53,16 +53,16 @@ describe("barra fija", () => {
 describe("confirmación", () => {
   it("el marcador muestra cancha, día y hora con su detalle", () => {
     assert.deepEqual(confirmationScore({ date: "2026-11-06", court: "02", hour: 19 }), [
-      { label: "Cancha", value: "Jardín", detail: "02 · Arcilla" },
+      { label: "Cancha", value: "Central", detail: "02 · Arcilla" },
       { label: "Día", value: "Vie 06", detail: "noviembre" },
       { label: "Hora", value: "19:00", detail: "hasta 20:00" },
     ]);
   });
 
   it("«Cómo llegar» cuenta las canchas desde el acceso oeste, en el orden del plano", () => {
-    assert.match(wayfindingText("01"), /Central es la primera cancha desde el acceso\.$/);
-    assert.match(wayfindingText("02"), /Jardín es la segunda cancha desde el acceso\.$/);
-    assert.match(wayfindingText("03"), /Club es la tercera cancha desde el acceso\.$/);
+    assert.match(wayfindingText("01"), /Club es la primera cancha desde el acceso\.$/);
+    assert.match(wayfindingText("02"), /Central es la segunda cancha desde el acceso\.$/);
+    assert.match(wayfindingText("03"), /Jardín es la tercera cancha desde el acceso\.$/);
     assert.match(wayfindingText("02"), /^Entrá por el acceso oeste y seguí la galería del pabellón\./);
   });
 

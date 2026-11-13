@@ -254,9 +254,9 @@ describe("bookingHref", () => {
 
 describe("clubHref", () => {
   it("vuelve a la sección de la cancha elegida en la home", () => {
-    assert.equal(clubHref("01"), "/#cancha-central");
-    assert.equal(clubHref("02"), "/#cancha-jardin");
-    assert.equal(clubHref("03"), "/#cancha-club");
+    assert.equal(clubHref("01"), "/#cancha-club");
+    assert.equal(clubHref("02"), "/#cancha-central");
+    assert.equal(clubHref("03"), "/#cancha-jardin");
   });
 
   it("sin cancha, o con una que no existe, vuelve al inicio", () => {

@@ -19,7 +19,7 @@ export function Hero() {
       <figcaption className="court-caption" id="cancha-02" tabIndex={-1}>
         <span className="court-line" aria-hidden="true" />
         <span className="court-number"><span className="sr-only">Cancha </span>02</span>
-        <span className="court-name">Jardín <span className="court-surface-desktop">/ Polvo de ladrillo</span><span className="court-surface-mobile">· Arcilla</span></span>
+        <span className="court-name">Central <span className="court-surface-desktop">/ Polvo de ladrillo</span><span className="court-surface-mobile">· Arcilla</span></span>
         <a className="text-link mobile-tour" href="#el-club">Recorré el club <ArrowRightIcon size={21} weight="light" aria-hidden="true" /></a>
       </figcaption>
     </figure>

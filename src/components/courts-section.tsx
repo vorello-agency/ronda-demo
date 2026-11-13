@@ -14,12 +14,14 @@ function CourtDetails({ court }: { court: Court }) {
   </div>;
 }
 
-/** Image widths follow the layout: Central spans the page, the clay spread is a 1.5fr / 1fr grid. */
+/** Image widths follow the layout: the hard court spans the page, the clay spread is a 1.5fr / 1fr grid. */
 const imageSizes = {
   featured: "(min-width: 768px) 92vw, 100vw",
   wide: "(min-width: 768px) 55vw, 100vw",
   narrow: "(min-width: 768px) 34vw, 100vw",
 };
+
+const surfaceLabel = (court: Court) => (court.surface === "Arcilla" ? court.surface : court.surfaceDetail);
 
 function CourtArticle({ court, layout }: { court: Court; layout: keyof typeof imageSizes }) {
   const featured = layout === "featured";
@@ -27,7 +29,7 @@ function CourtArticle({ court, layout }: { court: Court; layout: keyof typeof im
     <header className="ronda-court-heading">
       <span className="ronda-court-index"><span className="sr-only">Cancha </span>{court.id}</span>
       <h3 id={`${court.anchor}-title`}>{court.name}</h3>
-      <span className="ronda-court-surface">{court.surface} · {court.surfaceDetail}</span>
+      <span className="ronda-court-surface">{surfaceLabel(court)}</span>
     </header>
     <div className="ronda-court-image">
       <Image src={court.image.src} width={court.image.width} height={court.image.height} alt={court.image.alt} sizes={imageSizes[layout]} quality={85} />
@@ -38,11 +40,11 @@ function CourtArticle({ court, layout }: { court: Court; layout: keyof typeof im
 
 /** Independent court entries stay usable when a future overview is added before them. */
 export function CourtsSection() {
-  const [central, ...clayCourts] = courts;
+  const [featured, ...clayCourts] = courts;
   return <section className="ronda-courts" id="canchas" tabIndex={-1} aria-labelledby="courts-title">
     {/* La entrada de Canchas ya la presenta la transición anterior: el título queda para lectores de pantalla. */}
     <div className="ronda-courts-topline"><h2 className="sr-only" id="courts-title">Las canchas</h2></div>
-    <CourtArticle court={central} layout="featured" />
+    <CourtArticle court={featured} layout="featured" />
     <div className="ronda-clay-spread">{clayCourts.map((court, index) => <CourtArticle key={court.id} court={court} layout={index === 0 ? "wide" : "narrow"} />)}</div>
   </section>;
 }

@@ -202,7 +202,7 @@ export function wayfindingText(court: CourtId): string {
   return `Entrá por el acceso oeste y seguí la galería del pabellón. ${courtName(court)} es la ${ORDINALS[position]} cancha desde el acceso.`;
 }
 
-/** Marcador de la confirmación: valor grande y detalle de cancha, día y hora («Jardín» · «02 · Arcilla», «Vie 06» · «noviembre», «19:00» · «hasta 20:00»). */
+/** Marcador de la confirmación: valor grande y detalle de cancha, día y hora («Central» · «02 · Arcilla», «Vie 06» · «noviembre», «19:00» · «hasta 20:00»). */
 export const confirmationScore = (booking: Booking) => [
   { label: "Cancha", value: courtName(booking.court), detail: `${booking.court} · ${surfaceOf(booking.court)}` },
   { label: "Día", value: `${WEEKDAYS_SHORT[weekday(booking.date)]} ${pad(dayNumber(booking.date))}`, detail: MONTHS[monthIndex(booking.date)] },

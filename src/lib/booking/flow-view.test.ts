@@ -126,7 +126,7 @@ describe("canchas en el plano", () => {
   it("la elegida lo dice primero, en texto y en su nombre accesible", () => {
     const option = courtOptions({ date: "2026-11-09", court: "02", hour: null }, ctx).find((item) => item.id === "02")!;
     assert.equal(courtStatusText(option), "Elegida");
-    assert.match(courtOptionLabel(option, null), /^Jardín, cancha 02, arcilla\. Elegida\. /);
+    assert.match(courtOptionLabel(option, null), /^Central, cancha 02, arcilla\. Elegida\. /);
   });
 });
 
@@ -141,15 +141,15 @@ describe("avisos y anuncios", () => {
 
   it("el anuncio de un conflicto incluye las alternativas", () => {
     const text = noticeAnnouncement({ kind: "court-busy", court: "01", hour: 19, alternatives: [{ court: "01", hour: 20 }, { court: "02", hour: 19 }] });
-    assert.equal(text, "Central está ocupada a las 19:00. Elegí otro horario para Central. Alternativas: Central a las 20:00 o Jardín a las 19:00.");
-    assert.match(noticeAnnouncement({ kind: "hour-busy", court: "01", hour: 19, alternatives: [{ court: "02", hour: 19 }] }), /Alternativa: Jardín a las 19:00\.$/);
+    assert.equal(text, "Club está ocupada a las 19:00. Elegí otro horario para Club. Alternativas: Club a las 20:00 o Central a las 19:00.");
+    assert.match(noticeAnnouncement({ kind: "hour-busy", court: "01", hour: 19, alternatives: [{ court: "02", hour: 19 }] }), /Alternativa: Central a las 19:00\.$/);
   });
 
   it("cada cambio sin conflicto tiene su anuncio", () => {
     const base: Selection = { date: "2026-11-09", court: null, hour: null };
     const free = findScenario((date, hour) => (date === "2026-11-09" && freeCourtsAt(date, hour, ctx).length > 0 ? hour : null));
     assert.equal(changeAnnouncement({ type: "date", date: "2026-11-10" }, applyChange(base, { type: "date", date: "2026-11-10" }, ctx)), "Disponibilidad del martes 10 de noviembre.");
-    assert.equal(changeAnnouncement({ type: "court", court: "02" }, applyChange(base, { type: "court", court: "02" }, ctx)), "Jardín elegida.");
+    assert.equal(changeAnnouncement({ type: "court", court: "02" }, applyChange(base, { type: "court", court: "02" }, ctx)), "Central elegida.");
     assert.equal(changeAnnouncement({ type: "hour", hour: free }, applyChange(base, { type: "hour", hour: free }, ctx)), `Horario de las ${String(free).padStart(2, "0")}:00 elegido.`);
   });
 
