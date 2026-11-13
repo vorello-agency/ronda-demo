@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowUpRightIcon, XIcon } from "@phosphor-icons/react";
+import { ArrowRightIcon, XIcon } from "@phosphor-icons/react";
 import { notices, type NoticeTopic } from "@/config/site";
 import { containDialogFocus } from "@/lib/dialog";
 
@@ -58,7 +58,7 @@ export function ExperienceActions({ children }: { children: ReactNode }) {
           <a className="button" href={`#${destination}`} onClick={() => {
             close();
             returnFocus.current = document.getElementById(destination);
-          }}>Volver a entrenamiento <ArrowUpRightIcon size={22} weight="light" aria-hidden="true" /></a>
+          }}>Volver a entrenamiento <ArrowRightIcon size={22} weight="light" aria-hidden="true" /></a>
         </div>
       </dialog>
     </ActionsContext>
@@ -68,6 +68,6 @@ export function ExperienceActions({ children }: { children: ReactNode }) {
 export function TrainingInfoButton({ className = "" }: { className?: string }) {
   const open = useExperienceActions();
   return <button className={`text-link ${className}`} onClick={(event) => open("training", event.currentTarget)}>
-    Sobre las clases <ArrowUpRightIcon size={22} weight="light" aria-hidden="true" />
+    Sobre las clases
   </button>;
 }

@@ -49,16 +49,18 @@ button, a { touch-action: manipulation; }
 .wordmark { font-family: var(--font-display); font-size: clamp(34px, 3.2vw, 48px); line-height: 1; text-transform: uppercase; letter-spacing: -.035em; }
 .brand-descriptor { font-size: 12px; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; }
 .desktop-nav { display: flex; align-items: center; gap: clamp(22px, 2.7vw, 42px); }
-.desktop-nav a, .desktop-nav button { min-height: 44px; display: inline-flex; align-items: center; font-size: 15px; border-bottom: 1px solid transparent; transition: border-color 180ms ease; white-space: nowrap; }
-.desktop-nav a:hover, .desktop-nav button:hover { border-color: currentColor; }
+.desktop-nav a, .desktop-nav button { min-height: 44px; display: inline-flex; align-items: center; font-size: 15px; text-decoration: underline; text-decoration-color: transparent; text-decoration-thickness: 1px; text-underline-offset: 8px; transition: text-decoration-color 180ms ease; white-space: nowrap; }
+.desktop-nav a:hover, .desktop-nav button:hover { text-decoration-color: currentColor; }
 .desktop-nav a:active, .desktop-nav button:active { opacity: .7; }
 .button { display: inline-flex; justify-content: center; align-items: center; gap: 20px; min-height: 56px; padding: 14px 28px; background: var(--color-cobalt); color: var(--color-mineral); font-size: 18px; line-height: var(--leading-lead); transition: background 180ms ease, transform 180ms var(--ease-out); }
 .button:hover { background: var(--color-ink); }
 .button:active { transform: translateY(1px); }
 .button svg, .text-link svg { flex-shrink: 0; transition: transform 240ms var(--ease-out); }
-.button:hover svg { transform: translate(2px, -2px); }
+.button:hover svg { transform: translateX(2px); }
 .text-link:hover svg { transform: translateX(4px); }
-.header-reserve { min-height: 44px; padding: 11px 26px; font-size: 16px; }
+.header-reserve { position: relative; min-height: 36px; padding: 7px 26px; font-size: 16px; }
+/* Botón visualmente compacto, con una zona clicable de al menos 44 px. */
+.header-reserve::before { content: ""; position: absolute; inset: -4px 0; }
 .menu-toggle { display: none; }
 .hero { position: relative; padding-top: 32px; padding-bottom: 24px; }
 .hero-copy { position: relative; z-index: 1; padding-top: 28px; margin-left: var(--gutter); }

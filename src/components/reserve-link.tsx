@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRightIcon } from "@phosphor-icons/react/ssr";
+import { ArrowRightIcon } from "@phosphor-icons/react/ssr";
 import type { ReservationCourt } from "@/data/courts";
 import { bookingHref } from "@/lib/booking/selection";
 
@@ -17,6 +17,6 @@ export function ReserveLink({ className = "", arrow = true, court, onClick }: Pr
     onClick={onClick}
   >
     {court ? "Reservar esta cancha" : "Reservar cancha"}
-    {arrow && <ArrowUpRightIcon size={24} weight="light" aria-hidden="true" />}
+    {arrow && <ArrowRightIcon size={24} weight="light" aria-hidden="true" />}
   </Link>;
 }
