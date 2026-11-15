@@ -30,7 +30,7 @@ export function BookingConfirmation({ booking, wayfinding, titleRef, onAgain }: 
       <div className="ronda-confirm-image">
         <Image src={court.image.src} alt={court.image.alt} fill sizes="(min-width: 1024px) 40vw, 100vw" quality={85} />
       </div>
-      <figcaption><span className="ronda-confirm-badge">{court.id}</span> {court.name} · {court.surfaceDetail}</figcaption>
+      <figcaption><span className="ronda-confirm-badge">{court.id}</span> {court.name} · {court.surface === "Arcilla" ? court.surface : court.surfaceDetail}</figcaption>
     </figure>
 
     <div className="ronda-confirm-rest">

@@ -269,6 +269,8 @@ button.ronda-booking-hour { border: 0; background: none; color: inherit; font: i
 .ronda-booking-hour-marks { display: flex; align-items: center; gap: 5px; height: 13px; }
 .ronda-booking-hour-mark { width: 6px; height: 6px; border: 1px solid var(--color-cobalt); border-radius: 50%; }
 .ronda-booking-hour-mark.is-free { background: var(--color-cobalt); }
+/* El punto de la cancha elegida, más grande: dice de un vistazo si tu cancha tiene lugar a esa hora. */
+.ronda-booking-hour-mark.is-chosen { width: 9px; height: 9px; border-width: 1.5px; }
 .ronda-booking-hour[aria-pressed="true"] .ronda-booking-hour-mark { border-color: var(--color-mineral); }
 .ronda-booking-hour[aria-pressed="true"] .ronda-booking-hour-mark.is-free { background: var(--color-mineral); }
 .ronda-booking-hour.is-full { cursor: default; }
@@ -337,6 +339,15 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
 
 /* Isométrico desde 1280 px: el plano gana ancho y el panel lateral se fija. */
 @media (min-width: 1280px) {
+  /* Ancho máximo del contenido, según el alto de la pantalla: el plano mide de alto ~0,61 de su ancho y, con lo que
+     tiene encima y sus etiquetas, suma ~445 px más; el panel y su separación, ~560 de ancho. El contenido llega hasta
+     donde el plano todavía entra entero en la pantalla (en una ultra ancha de 1440 px de alto, ~2190 px) y nunca baja
+     de 1400. Más allá crece el margen, no el plano. Header, apertura, flujo y footer usan el mismo margen: quedan
+     alineados y sus fondos y reglas siguen de borde a borde. */
+  .ronda-booking {
+    --content-max: max(1400px, calc((100vh - 445px) / .61 + 560px));
+    --gutter: max(clamp(24px, 4.2vw, 88px), calc((100vw - var(--content-max)) / 2));
+  }
   /* El flujo es una sola grilla: el plano a la izquierda y, a la derecha, día → hora → tu turno. La cinta de días deja
      su renglón y pasa a la columna como calendario de dos semanas, así el plano sube y entra en la primera pantalla.
      El escenario se disuelve (display: contents) para que el plano y el panel sean celdas de esta grilla. */
@@ -402,7 +413,7 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
   .ronda-booking-title > span { display: block; }
   .ronda-booking-demo { margin: 0; font-size: 14px; }
   .ronda-booking-demo strong { margin-bottom: 4px; }
-  .ronda-booking-days { grid-template-columns: minmax(0, 1fr); gap: 8px; padding: 30px 0 0; }
+  .ronda-booking-days { grid-template-columns: minmax(0, 1fr); gap: 10px; padding: 30px 0 0; }
   .ronda-booking-month { padding: 0 var(--gutter); }
   .ronda-booking-placeholder.is-month { height: 12px; }
   .ronda-booking-day-list { padding: 0 var(--gutter); scroll-padding-inline: var(--gutter); }
@@ -436,11 +447,13 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
   .ronda-booking-hour-row { grid-template-columns: minmax(0, 1fr); gap: 4px; }
   .ronda-booking-period { padding-top: 0; font-size: 10px; }
   .ronda-booking-hour-list { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-  .ronda-booking-hour { height: 70px; }
+  /* El número y los puntos ocupan ~40 px: con 56 las filas no dejan huecos. */
+  .ronda-booking-hour { height: 56px; }
   .ronda-booking-placeholder.is-hour { height: 22px; }
   .ronda-booking-hour-number { font-size: 24px; }
   .ronda-booking-hour.is-full .ronda-booking-hour-count { font-size: 10px; letter-spacing: 0; }
   .ronda-booking-ticket { margin-top: 40px; }
+  .button.ronda-booking-confirm { width: 100%; padding-inline: 16px; gap: 10px; }
   .ronda-booking-summary { gap: 6px 22px; }
   .ronda-booking-placeholder.is-value { width: 80px; height: 30px; }
   .ronda-booking-summary-value { height: 30px; font-size: 30px; }
@@ -544,6 +557,9 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
   .ronda-booking-bar-text { min-width: 0; margin: 0; font-family: var(--font-display); font-size: 24px; line-height: var(--leading-subheading); letter-spacing: -.01em; text-transform: uppercase; }
   .ronda-booking-bar .button { flex-shrink: 0; min-height: 48px; padding: 10px 18px; font-size: 16px; background: var(--color-mineral); color: var(--color-cobalt); }
   .ronda-booking-bar .button:focus-visible { outline-color: var(--color-mineral); }
+  /* Confirmación: cancha, día y hora en un renglón cada uno. Las columnas toman el ancho de su valor. */
+  .ronda-confirm-score { grid-template-columns: auto auto minmax(0, 1fr); }
+  .ronda-confirm-score strong { font-size: clamp(22px, 7vw, 28px); white-space: nowrap; overflow-wrap: normal; }
   /* Con la barra a la vista, el final de la página no queda tapado. */
   .ronda-booking:has(.ronda-booking-bar[data-visible="true"]) { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
 }

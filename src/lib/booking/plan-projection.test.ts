@@ -166,7 +166,8 @@ describe("etiquetas y rótulos", () => {
     const { gate } = exterior();
     assert.ok(to[1] >= project("plan", 0, gate[0])[1] && to[1] <= project("plan", 0, gate[1])[1], "la guía termina en el portón");
     const entry = clubPlan.paths.find((path) => path.id === "terraza-entrada")!;
-    assert.ok(from[0] === to[0] && from[0] > project("plan", entry.x, 0)[0] && from[0] < project("plan", entry.x + 1.5, 0)[0], "junto al portón, sobre la terraza de entrada");
+    // En la mitad oeste de la terraza de entrada: cerca del portón, pero con aire respecto del borde del dibujo.
+    assert.ok(from[0] === to[0] && from[0] > project("plan", entry.x + 1, 0)[0] && from[0] < project("plan", entry.x + entry.width / 2, 0)[0], "junto al portón, sobre la terraza de entrada");
     assert.ok(to[1] - from[1] < 190, "guía corta");
   });
 

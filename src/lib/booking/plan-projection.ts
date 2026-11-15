@@ -323,12 +323,13 @@ export function planAccessNote(): Vec2 {
 }
 
 /**
- * Planta: guía de «Acceso», del rótulo a la entrada, en unidades de SVG. Baja por el césped, justo al este del seto
- * perimetral, y termina sobre la terraza de entrada, al lado del portón.
+ * Planta: guía de «Acceso», del rótulo a la entrada, en unidades de SVG. Baja por el césped, al este del seto
+ * perimetral y con aire respecto de él: en celular el dibujo va de borde a borde y pegada al seto quedaba sobre el
+ * borde de la pantalla. Termina sobre la terraza de entrada, al lado del portón.
  */
 export function planAccessGuide(): readonly [from: Vec2, to: Vec2] {
   const { gate, edge } = exterior();
-  const [x] = project("plan", edge + 0.55, 0);
+  const [x] = project("plan", edge + 2.2, 0);
   const [, noteY] = project("plan", 0, clubPlan.pavilion.y - ROOF_OVERHANG.sides, roofHeight("plan"));
   return [[round(x), round(noteY - 17)], [round(x), round(project("plan", 0, gate[0] + 0.5)[1])]];
 }

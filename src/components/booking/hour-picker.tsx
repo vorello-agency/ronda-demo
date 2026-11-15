@@ -11,7 +11,8 @@ type Props = { periods: HourPeriod[]; selectedHour: Hour | null; selectedCourt: 
 
 /**
  * Horarios por franja. Debajo de cada número, tres puntos: uno por cancha en el orden del plano, lleno si tiene lugar
- * (ver `hourCourtMarks`). Con la cancha elegida ocupada, su punto queda vacío; el horario sigue siendo elegible.
+ * (ver `hourCourtMarks`). El de la cancha elegida es más grande: si está vacío, esa cancha no tiene lugar a esa hora,
+ * pero el horario sigue siendo elegible (lleva a las alternativas).
  * Tachado y «completo»: ninguna cancha (aria-disabled, pero enfocable y explica por qué al activarlo).
  * `data-busy` permite que el plano previsualice las canchas ocupadas al pasar o enfocar un horario (solo CSS).
  */
@@ -42,7 +43,7 @@ export function HourPicker({ periods, selectedHour, selectedCourt, onSelect }: P
           {option.tone === "full"
             ? <span className="ronda-booking-hour-count" aria-hidden="true">{hourCountText(option)}</span>
             : <span className="ronda-booking-hour-marks" aria-hidden="true">
-              {hourCourtMarks(option).map((mark) => <span key={mark.court} className={`ronda-booking-hour-mark${mark.free ? " is-free" : ""}`} />)}
+              {hourCourtMarks(option).map((mark) => <span key={mark.court} className={`ronda-booking-hour-mark${mark.free ? " is-free" : ""}${mark.court === selectedCourt ? " is-chosen" : ""}`} />)}
             </span>}
         </button>)}
       </div>
