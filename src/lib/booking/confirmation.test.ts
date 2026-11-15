@@ -59,12 +59,12 @@ describe("confirmación", () => {
     ]);
   });
 
-  it("«Cómo llegar» cuenta las canchas desde el acceso oeste, en el orden del plano", () => {
-    assert.match(wayfindingText("01"), /Club es la primera cancha desde el acceso\.$/);
-    assert.match(wayfindingText("02"), /Central es la segunda cancha desde el acceso\.$/);
-    assert.match(wayfindingText("03"), /Jardín es la tercera cancha desde el acceso\.$/);
-    assert.match(wayfindingText("02"), /^Entrá por el acceso oeste y seguí la galería del pabellón\./);
+  it("«Cómo llegar» parte del pabellón y cuenta las canchas por la galería, en el orden del plano", () => {
+    assert.equal(wayfindingText("01"), "Entrá por el pabellón y seguí la galería. Club es la primera cancha.");
+    assert.equal(wayfindingText("02"), "Entrá por el pabellón y seguí la galería. Central es la segunda cancha.");
+    assert.equal(wayfindingText("03"), "Entrá por el pabellón y seguí la galería. Jardín es la tercera cancha.");
   });
+
 
   it("si el turno dejó de estar disponible al confirmar, lo explica", () => {
     assert.equal(confirmFailedText({ date: FUTURE_DATES[0], court: "02", hour: 19 }), "El turno de las 19:00 ya no está disponible. Elegí otro horario.");

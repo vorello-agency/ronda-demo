@@ -7,7 +7,7 @@ import {
   SLOT_LENGTH_TEXT, changeAnnouncement, clubTimeNote, courtOptionLabel, courtStatusText, hourCountText, hourOptionLabel,
   noticeAnnouncement,
 } from "./copy.ts";
-import { courtOptions, dayOptions, hourPeriods, monthsLabel, noticeOrigin } from "./flow-view.ts";
+import { courtOptions, dayOptions, hourCourtMarks, hourPeriods, monthsLabel, noticeOrigin } from "./flow-view.ts";
 import { NOW, contextAt, findScenario } from "./test-utils.ts";
 import type { Selection } from "./types.ts";
 
@@ -69,7 +69,9 @@ describe("horarios", () => {
     });
     const option = hoursOf({ date, court, hour: null }).find((item) => item.hour === hour)!;
     assert.equal(option.tone, "alt");
-    assert.equal(hourCountText(option), "otra cancha");
+    assert.equal(hourCountText(option), "");
+    // El punto de la cancha elegida queda vacío: ahí está el «otra cancha».
+    assert.equal(hourCourtMarks(option).find((mark) => mark.court === court)?.free, false);
     assert.match(hourOptionLabel(option, court), /está ocupada; libre en .+\. Elegilo para ver alternativas\.$/);
   });
 
@@ -78,25 +80,28 @@ describe("horarios", () => {
     const option = hoursOf({ date, court: "02", hour: null }).find((item) => item.hour === hour)!;
     assert.equal(option.tone, "full");
     assert.equal(hourCountText(option), "completo");
+    assert.deepEqual(hourCourtMarks(option), []);
     assert.match(hourOptionLabel(option, "02"), /Completo: ninguna cancha tiene lugar\.$/);
   });
 
   it("el conteo y la etiqueta coinciden con las canchas libres", () => {
     const option = hoursOf({ date: "2026-11-09", court: null, hour: null }).find((item) => item.free.length === 2)
       ?? hoursOf({ date: "2026-11-10", court: null, hour: null }).find((item) => item.free.length === 2)!;
-    assert.equal(hourCountText(option), "2 libres");
+    assert.deepEqual(hourCourtMarks(option).filter((mark) => mark.free).map((mark) => mark.court), option.free);
     assert.match(hourOptionLabel(option, null), /^\d\d:00 a \d\d:00\. 2 de 3 canchas libres: \S+ y \S+\.$/);
   });
 
-  it("con las tres canchas libres no dice nada: es lo normal", () => {
+  it("con alguna cancha libre: tres puntos en el orden del plano y sin texto", () => {
     const option = hoursOf({ date: "2026-11-09", court: null, hour: null }).find((item) => item.free.length === 3)!;
     assert.equal(hourCountText(option), "");
+    assert.deepEqual(hourCourtMarks(option), COURT_IDS.map((court) => ({ court, free: true })));
   });
 
-  it("una sola cancha libre se nombra en singular", () => {
+  it("una sola cancha libre: un solo punto lleno, el de esa cancha", () => {
     const { date, hour } = findScenario((date, hour) => (freeCourtsAt(date, hour, ctx).length === 1 ? { date, hour } : null));
     const option = hoursOf({ date, court: null, hour: null }).find((item) => item.hour === hour)!;
-    assert.equal(hourCountText(option), "1 libre");
+    assert.deepEqual(hourCourtMarks(option).filter((mark) => mark.free).map((mark) => mark.court), option.free);
+    assert.equal(hourCourtMarks(option).length, COURT_IDS.length);
   });
 });
 

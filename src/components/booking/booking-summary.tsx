@@ -3,7 +3,7 @@
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { courts } from "@/data/courts";
 import { SLOT_MINUTES, weekday } from "@/lib/booking/club-time";
-import { WEEKDAYS_SHORT, formatHour, formatRange } from "@/lib/booking/copy";
+import { WEEKDAYS_SHORT, formatHour, slotEndText } from "@/lib/booking/copy";
 import type { Selection } from "@/lib/booking/types";
 
 export type SummaryTarget = "court" | "date" | "hour";
@@ -23,12 +23,16 @@ export function BookingSummary({ selection, onJump, onConfirm }: Props) {
     { target: "date", label: "Día", value: day, placeholder: "" },
     { target: "hour", label: "Hora", value: hour, placeholder: "Elegí hora" },
   ];
-  // Con solo la cancha, la superficie no queda sola: se suma la duración del turno, como cuando no hay nada elegido.
-  const length = `Turno de ${SLOT_MINUTES} minutos`;
-  const details = selection.hour !== null ? [court?.surface, formatRange(selection.hour)].filter(Boolean).join(" · ") : court ? `${court.surface} · ${length}` : length;
+  // Va en el renglón de «Tu turno», como los datos de los otros encabezados. No repite la hora, que ya está abajo:
+  // suma la superficie y cuánto dura (sin hora) o hasta cuándo (con hora).
+  const end = selection.hour === null ? `Turno de ${SLOT_MINUTES} minutos` : slotEndText(selection.hour);
+  const details = court ? `${court.surface} · ${end}` : end;
 
   return <section className="ronda-booking-ticket" aria-labelledby="ronda-ticket-title">
-    <h2 className="eyebrow" id="ronda-ticket-title">Tu turno</h2>
+    <div className="ronda-booking-ticket-head">
+      <h2 className="eyebrow" id="ronda-ticket-title">Tu turno</h2>
+      <p className="ronda-booking-meta">{details}</p>
+    </div>
     <div className="ronda-booking-summary">
       {items.map((item) => <button
         key={item.target}
@@ -41,10 +45,8 @@ export function BookingSummary({ selection, onJump, onConfirm }: Props) {
         <span className="ronda-booking-summary-value" aria-hidden="true">{item.value ?? item.placeholder}</span>
       </button>)}
     </div>
-    <p className="ronda-booking-summary-caption">{details}</p>
     {court && hour && <button type="button" className="button ronda-booking-confirm" onClick={onConfirm}>
       Confirmar reserva simulada <ArrowRightIcon size={20} weight="light" aria-hidden="true" />
     </button>}
-    <p className="ronda-booking-fine">Simulación: no se reserva la cancha ni se cobra nada.</p>
   </section>;
 }

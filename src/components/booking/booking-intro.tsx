@@ -6,7 +6,8 @@ export function BookingIntro() {
     </h1>
     <p className="ronda-booking-demo">
       <strong>Demostración</strong>{" "}
-      Disponibilidad simulada. No se realizan reservas ni pagos reales.
+      Disponibilidad simulada.<br />
+      No se realizan reservas ni pagos reales.
     </p>
   </div>;
 }

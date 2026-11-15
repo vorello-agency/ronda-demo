@@ -22,6 +22,8 @@ const pad = (value: number) => String(value).padStart(2, "0");
 export const formatHour = (hour: Hour): string => `${pad(hour)}:00`;
 /** «19:00 a 20:00». */
 export const formatRange = (hour: Hour): string => `${formatHour(hour)} a ${pad(hour + 1)}:00`;
+/** «Hasta las 20:00»: el fin del turno que empieza a esa hora. */
+export const slotEndText = (hour: Hour): string => `Hasta las ${pad(hour + 1)}:00`;
 
 const dayNumber = (date: IsoDate) => Number(date.slice(8, 10));
 const monthIndex = (date: IsoDate) => Number(date.slice(5, 7)) - 1;
@@ -106,14 +108,11 @@ export function hourOptionLabel(option: HourOptionLike, selectedCourt: CourtId |
 }
 
 /**
- * Texto bajo el número de un horario. Solo habla cuando ayuda a decidir: nada si todas las canchas tienen lugar,
- * «1 libre» o «2 libres» si quedan pocas, «otra cancha» si la elegida está ocupada pero otra no, y «completo».
+ * Texto bajo el número de un horario: solo «completo». Con alguna cancha libre, lo que hay debajo son tres puntos,
+ * uno por cancha (ver `hourCourtMarks`), y el detalle en palabras va en `hourOptionLabel`.
  */
 export function hourCountText(option: HourOptionLike): string {
-  if (option.tone === "full") return "completo";
-  if (option.tone === "alt") return "otra cancha";
-  if (option.free.length === courts.length) return "";
-  return `${option.free.length} ${option.free.length === 1 ? "libre" : "libres"}`;
+  return option.tone === "full" ? "completo" : "";
 }
 
 /*
@@ -196,10 +195,10 @@ export function barText(selection: Selection, nowMs: number): string {
 
 const ORDINALS = ["primera", "segunda", "tercera"] as const;
 
-/** «Cómo llegar»: el acceso está al oeste y las canchas se cuentan desde ahí, en el orden del plano. */
+/** «Cómo llegar»: se entra por el pabellón, en el extremo oeste, y las canchas se cuentan desde ahí por la galería. */
 export function wayfindingText(court: CourtId): string {
   const position = courts.findIndex((item) => item.id === court);
-  return `Entrá por el acceso oeste y seguí la galería del pabellón. ${courtName(court)} es la ${ORDINALS[position]} cancha desde el acceso.`;
+  return `Entrá por el pabellón y seguí la galería. ${courtName(court)} es la ${ORDINALS[position]} cancha.`;
 }
 
 /** Marcador de la confirmación: valor grande y detalle de cancha, día y hora («Central» · «02 · Arcilla», «Vie 06» · «noviembre», «19:00» · «hasta 20:00»). */

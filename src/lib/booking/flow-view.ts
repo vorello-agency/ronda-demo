@@ -38,6 +38,14 @@ export type HourTone = "free" | "alt" | "full";
 export type HourOption = { hour: Hour; free: CourtId[]; busy: CourtId[]; tone: HourTone };
 export type HourPeriod = { label: string; options: HourOption[] };
 
+/**
+ * Puntos bajo un horario: uno por cancha, en el orden del plano (01 Club, 02 Central, 03 Jardín), lleno si tiene lugar.
+ * Sin puntos cuando no hay ninguna libre: ese horario ya dice «completo».
+ */
+export function hourCourtMarks(option: Pick<HourOption, "free" | "tone">): { court: CourtId; free: boolean }[] {
+  return option.tone === "full" ? [] : COURT_IDS.map((court) => ({ court, free: option.free.includes(court) }));
+}
+
 /** Horarios del día agrupados por franja. Los que ya empezaron no se muestran; una franja vacía tampoco. */
 export function hourPeriods(selection: Selection, ctx: Context): HourPeriod[] {
   const bookable = new Set(bookableHours(selection.date, ctx.nowMs));

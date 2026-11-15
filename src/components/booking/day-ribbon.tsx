@@ -12,7 +12,8 @@ const monthName = (date: IsoDate) => MONTHS[Number(date.slice(5, 7)) - 1];
 /** Cinta de los 14 días reservables. Un día sin turnos (hoy, tarde) queda visible pero no se elige. */
 export function DayRibbon({ days, selected, onSelect }: { days: DayOption[]; selected: IsoDate; onSelect: (date: IsoDate) => void }) {
   const list = useRef<HTMLDivElement>(null);
-  const { itemProps, groupProps } = useRoving(days.map((day) => day.date), selected);
+  // Desde 1280 px la cinta es un calendario de dos semanas: las flechas verticales saltan de semana.
+  const { itemProps, groupProps } = useRoving(days.map((day) => day.date), selected, { grid: true });
 
   // Al montar, la cinta se corre hasta el día elegido (por ejemplo, desde un enlace con fecha) sin mover la página.
   useEffect(() => {
@@ -23,7 +24,12 @@ export function DayRibbon({ days, selected, onSelect }: { days: DayOption[]; sel
 
   return <section className="ronda-booking-days" aria-labelledby="ronda-days-title">
     <div className="ronda-booking-month">
-      <h2 className="eyebrow" id="ronda-days-title"><span className="sr-only">Día, </span>{monthsLabel(days.map((day) => day.date))}</h2>
+      {/* «¿Qué día?» se ve solo desde 1280 px, junto a «¿Dónde?» y «¿A qué hora?»; antes, el mes solo, como epígrafe. */}
+      <h2 className="eyebrow" id="ronda-days-title">
+        <span className="ronda-booking-days-question">¿Qué día? </span>
+        <span className="sr-only ronda-booking-days-sr">Día, </span>
+        <span className="ronda-booking-days-month">{monthsLabel(days.map((day) => day.date))}</span>
+      </h2>
     </div>
     <div ref={list} className="ronda-booking-day-list" role="group" aria-labelledby="ronda-days-title" {...groupProps}>
       {days.map((day) => <button

@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { courts } from "../../data/courts.ts";
-import { HOUR_PERIODS, alternativeLabel, correctionText, courtName, dayLabel, formatHour, formatRange, joinList, longDayLabel, noticeText } from "./copy.ts";
+import { HOUR_PERIODS, alternativeLabel, correctionText, courtName, dayLabel, formatHour, formatRange, joinList, slotEndText, longDayLabel, noticeText } from "./copy.ts";
 import type { Notice } from "./conflicts.ts";
 import type { Correction } from "./selection.ts";
 import { HOURS } from "./club-time.ts";
@@ -13,6 +13,8 @@ describe("formatos", () => {
     assert.equal(formatHour(19), "19:00");
     assert.equal(formatRange(8), "08:00 a 09:00");
     assert.equal(formatRange(21), "21:00 a 22:00");
+    assert.equal(slotEndText(8), "Hasta las 09:00");
+    assert.equal(slotEndText(21), "Hasta las 22:00");
   });
 
   it("nombra los días: «Hoy» para el actual y «Vie 06» para el resto", () => {

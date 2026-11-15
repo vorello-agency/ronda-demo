@@ -2,7 +2,7 @@
 
 import type { Hour } from "@/lib/booking/club-time";
 import { hourCountText, hourOptionLabel } from "@/lib/booking/copy";
-import type { HourPeriod } from "@/lib/booking/flow-view";
+import { hourCourtMarks, type HourPeriod } from "@/lib/booking/flow-view";
 import { busyAttribute } from "@/lib/booking/plan-state";
 import type { CourtId } from "@/lib/booking/types";
 import { useRoving } from "./use-roving";
@@ -10,15 +10,16 @@ import { useRoving } from "./use-roving";
 type Props = { periods: HourPeriod[]; selectedHour: Hour | null; selectedCourt: CourtId | null; onSelect: (hour: Hour) => void };
 
 /**
- * Horarios por franja. Debajo de cada número, solo lo que ayuda a decidir (ver `hourCountText`): pocas canchas libres,
- * «otra cancha» (sin lugar en la elegida, pero sí en otra; elegible) o «completo».
+ * Horarios por franja. Debajo de cada número, tres puntos: uno por cancha en el orden del plano, lleno si tiene lugar
+ * (ver `hourCourtMarks`). Con la cancha elegida ocupada, su punto queda vacío; el horario sigue siendo elegible.
  * Tachado y «completo»: ninguna cancha (aria-disabled, pero enfocable y explica por qué al activarlo).
  * `data-busy` permite que el plano previsualice las canchas ocupadas al pasar o enfocar un horario (solo CSS).
  */
 export function HourPicker({ periods, selectedHour, selectedCourt, onSelect }: Props) {
   const options = periods.flatMap((period) => period.options);
   const firstOpen = options.find((option) => option.tone !== "full")?.hour ?? null;
-  const { itemProps, groupProps } = useRoving(options.map((option) => option.hour), selectedHour ?? firstOpen);
+  // En grilla: desde 1280 px los horarios son dos filas de 7 y, por debajo, una fila por franja.
+  const { itemProps, groupProps } = useRoving(options.map((option) => option.hour), selectedHour ?? firstOpen, { grid: true });
 
   if (options.length === 0) return <p className="ronda-booking-empty">Ya no quedan turnos este día. Elegí otro día.</p>;
 
@@ -38,7 +39,11 @@ export function HourPicker({ periods, selectedHour, selectedCourt, onSelect }: P
           {...itemProps(option.hour)}
         >
           <span className="ronda-booking-hour-number" aria-hidden="true">{String(option.hour).padStart(2, "0")}</span>
-          <span className="ronda-booking-hour-count" aria-hidden="true">{hourCountText(option)}</span>
+          {option.tone === "full"
+            ? <span className="ronda-booking-hour-count" aria-hidden="true">{hourCountText(option)}</span>
+            : <span className="ronda-booking-hour-marks" aria-hidden="true">
+              {hourCourtMarks(option).map((mark) => <span key={mark.court} className={`ronda-booking-hour-mark${mark.free ? " is-free" : ""}`} />)}
+            </span>}
         </button>)}
       </div>
     </div>)}

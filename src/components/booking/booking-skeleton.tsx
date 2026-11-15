@@ -17,7 +17,7 @@ export function BookingSkeleton({ art }: { art: ReactNode }) {
     </noscript>
 
     <div className="ronda-booking-days" aria-hidden="true">
-      <div className="ronda-booking-month"><span className="ronda-booking-placeholder is-month" /></div>
+      <div className="ronda-booking-month"><span className="ronda-booking-days-question">¿Qué día?</span><span className="ronda-booking-placeholder is-month" /></div>
       <div className="ronda-booking-day-list">
         {Array.from({ length: HORIZON_DAYS }, (_, index) => <span key={index} className="ronda-booking-day is-placeholder">
           <span className="ronda-booking-placeholder is-weekday" />
@@ -66,15 +66,16 @@ export function BookingSkeleton({ art }: { art: ReactNode }) {
         </section>
 
         <section className="ronda-booking-ticket" aria-labelledby="ronda-ticket-title">
-          <h2 className="eyebrow" id="ronda-ticket-title">Tu turno</h2>
+          <div className="ronda-booking-ticket-head">
+            <h2 className="eyebrow" id="ronda-ticket-title">Tu turno</h2>
+            <span className="ronda-booking-placeholder is-meta" aria-hidden="true" />
+          </div>
           <div className="ronda-booking-summary" aria-hidden="true">
             {["Cancha", "Día", "Hora"].map((label) => <span key={label} className="ronda-booking-summary-item">
               <span className="ronda-booking-summary-label">{label}</span>
               <span className="ronda-booking-placeholder is-value" />
             </span>)}
           </div>
-          <p className="ronda-booking-summary-caption" aria-hidden="true"><span className="ronda-booking-placeholder is-caption" /></p>
-          <p className="ronda-booking-fine">Simulación: no se reserva la cancha ni se cobra nada.</p>
         </section>
       </div>
     </div>
