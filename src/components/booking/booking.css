@@ -320,7 +320,7 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
 .ronda-booking-confirm { margin-top: 24px; }
 
 /* Pie */
-.ronda-booking-footer { display: flex; align-items: end; justify-content: space-between; gap: 24px 48px; padding: 26px var(--gutter) 34px; border-top: 1px solid var(--rule); }
+.ronda-booking-footer { display: flex; align-items: end; justify-content: space-between; gap: 24px 48px; padding: 26px var(--gutter) 34px; background-color: var(--color-mineral-dark); }
 .ronda-booking-footer .studio-credit { color: var(--color-cobalt); }
 /* En la columna derecha el aviso se alinea a la derecha; apilado en celular, a la izquierda. */
 .ronda-booking-footer-notice { max-width: 58ch; margin: 0 0 3px; font-size: 13px; line-height: var(--leading-body); text-align: right; text-wrap: balance; }

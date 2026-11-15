@@ -5,8 +5,9 @@
 @source not "../lib/booking";
 @source inline("sr-only");
 
-@theme inline {
+@theme inline static {
   --color-mineral: #eeece3;
+  --color-mineral-dark: #e2e0d7;
   --color-cobalt: #263f9e;
   --color-ink: #162c46;
   --color-citron: #dce78f;
