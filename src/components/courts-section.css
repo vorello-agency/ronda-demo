@@ -29,7 +29,7 @@
 .ronda-facilities:focus-visible { outline-color: var(--color-mineral); outline-offset: -8px; }
 .ronda-facilities .eyebrow { grid-column: 1 / -1; color: var(--color-mineral); }
 /* La columna del texto es la más ancha: así la segunda frase entra en dos líneas desde 1024 px. */
-.ronda-facilities-heading { display: grid; grid-template-columns: 1fr 1.3fr; align-items: end; gap: 24px 8vw; }
+.ronda-facilities-heading { display: grid; grid-template-columns: 1fr 1.3fr; align-items: end; gap: 24px min(8vw, 154px); }
 .ronda-facilities-heading h2 { margin: 0; font-family: var(--font-display); font-weight: 400; }
 .ronda-facilities-heading > p:last-child { margin: 0 0 4px; font-size: clamp(19px, 1.7vw, 28px); line-height: var(--leading-intro); letter-spacing: -.015em; text-wrap: pretty; }
 .ronda-facilities-layout { display: grid; grid-template-columns: 1.9fr 1fr; align-items: start; gap: clamp(32px, 5vw, 96px); margin-top: 48px; }

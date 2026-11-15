@@ -293,3 +293,19 @@ dialog[open] { animation: dialog-enter 220ms var(--ease-out); }
 @media (max-width: 359px) {
   .eyebrow { letter-spacing: .12em; }
 }
+
+/* En XXL, los fondos siguen de borde a borde y el contenido conserva la composición de escritorio. */
+@media (min-width: 1920px) {
+  body:has(.hero) {
+    --home-outer: max(0px, calc((100vw - 1920px) / 2));
+    --home-inner: 80px;
+    --gutter: calc(var(--home-outer) + var(--home-inner));
+  }
+
+  .hero, .community-intro {
+    --gutter: var(--home-inner);
+    padding-inline: var(--home-outer);
+  }
+
+  .tournaments-photo { --gutter: var(--home-inner); }
+}
