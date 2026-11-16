@@ -1,7 +1,5 @@
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
 import { describe, it } from "node:test";
-import { fileURLToPath } from "node:url";
 import { clubPlan } from "./club-plan.ts";
 import { courts } from "./courts.ts";
 
@@ -76,27 +74,5 @@ describe("geometría del club", () => {
     assert.ok(pavilionExit.x > pavilion.x && pavilionExit.x < plan[0].x + plan[0].width / 2);
     assert.ok(pavilionExit.x > gallery.x && pavilionExit.x < gallery.x + gallery.width);
     assert.notDeepEqual(entrance, pavilionExit);
-  });
-
-  const jsonPath = fileURLToPath(new URL("../../docs/exploracion/refinamiento-b/geometria-club.json", import.meta.url));
-  const docsPath = fileURLToPath(new URL("../../docs", import.meta.url));
-  // La referencia vive en docs/, material interno que no se publica (.git/info/exclude). Sin docs/ —un clon del repo
-  // público— la prueba se omite y lo dice. Con docs/ es obligatoria: si el JSON se mueve o se borra, falla.
-  const skip = existsSync(docsPath) ? false : "la referencia espacial (docs/) solo existe en el clon de trabajo; no se publica";
-  it("coincide con docs/exploracion/refinamiento-b/geometria-club.json", { skip }, () => {
-    assert.ok(existsSync(jsonPath), `No se encontró la referencia espacial en ${jsonPath}. Si se movió, actualizá la ruta en esta prueba.`);
-    const reference = JSON.parse(readFileSync(jsonPath, "utf8"));
-    // Un elemento espacial nuevo en el JSON (otra cancha, una piscina…) tiene que revisarse acá y en club-plan.ts.
-    const spatial = ["site", "pavilion", "courts", "paths", "boundary", "entrance", "pavilionExit"];
-    const descriptive = ["status", "units", "coordinates", "selectedCourt", "viewpoints", "invariants"];
-    assert.deepEqual(Object.keys(reference).filter((key) => ![...spatial, ...descriptive].includes(key)), [], "el JSON tiene claves nuevas sin contemplar");
-    assert.deepEqual(site, { width: reference.site.width, height: reference.site.height });
-    assert.deepEqual(pavilion, { x: reference.pavilion.x, y: reference.pavilion.y, width: reference.pavilion.width, height: reference.pavilion.height, levels: reference.pavilion.levels });
-    assert.deepEqual(plan, reference.courts.map(({ id, x, y, width, height }: Record<string, unknown>) => ({ id, x, y, width, height })));
-    assert.deepEqual(reference.courts.map((court: { name: string }) => court.name), courts.map((court) => court.name));
-    assert.deepEqual(paths, reference.paths);
-    assert.deepEqual(entrance, { x: reference.entrance.x, y: reference.entrance.y });
-    assert.deepEqual(pavilionExit, reference.pavilionExit);
-    assert.deepEqual(boundary, reference.boundary);
   });
 });

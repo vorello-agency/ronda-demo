@@ -12,7 +12,7 @@ import type { Booking } from "@/lib/booking/types";
 type Props = { booking: Booking; wayfinding: ReactNode; titleRef: Ref<HTMLHeadingElement>; onAgain: () => void };
 
 /**
- * Confirmación de la reserva simulada (diseño aprobado). Reemplaza la apertura y el flujo; el foco va al título.
+ * Confirmación de la reserva simulada. Reemplaza la apertura y el flujo; el foco va al título.
  * La fotografía se carga recién acá, cuando hay una cancha confirmada. «Atrás» sale de la página: la confirmación
  * es estado en memoria y no deja entradas en el historial.
  */

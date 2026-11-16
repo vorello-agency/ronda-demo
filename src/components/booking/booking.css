@@ -475,7 +475,7 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
   .ronda-booking-hour.is-full .ronda-booking-hour-count { letter-spacing: -.02em; }
 }
 
-/* Confirmación (diseño aprobado). Una columna hasta 1023 px; desde 1024, texto a la izquierda y foto a la derecha. */
+/* Confirmación. Una columna hasta 1023 px; desde 1024, texto a la izquierda y foto a la derecha. */
 .ronda-confirm {
   --confirm-rule: color-mix(in srgb, var(--color-mineral) 33%, transparent);
   --confirm-soft: color-mix(in srgb, var(--color-mineral) 80%, var(--color-cobalt));

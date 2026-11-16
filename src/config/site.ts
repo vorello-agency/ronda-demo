@@ -1,4 +1,4 @@
-/** Provisional identity. Change the name here; components derive it from this source. */
+/** Site identity. Change the name here; components derive it from this source. */
 export const site = {
   name: "Ronda",
   descriptor: "Club de Tenis",

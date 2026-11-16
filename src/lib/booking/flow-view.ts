@@ -6,7 +6,7 @@ import type { Context, CourtId, Selection } from "./types.ts";
 
 /**
  * Lo que muestra cada control del flujo, derivado de la selección y el contexto. Funciones puras:
- * la interfaz solo dibuja estos datos, y las reglas visuales aprobadas quedan probadas acá.
+ * la interfaz solo dibuja estos datos, y las reglas visuales quedan probadas acá.
  */
 
 export type DayOption = { date: IsoDate; isToday: boolean; isWeekend: boolean; bookable: boolean };

@@ -1,6 +1,6 @@
 import { courts } from "@/data/courts";
 
-/** The approved editorial handoff now links to the canonical court entries. */
+/** Transición editorial hacia la sección de canchas: enlaza a cada cancha. */
 export function CourtsTransition() {
   return (
     <aside className="courts-transition" id="hacia-las-canchas" tabIndex={-1} aria-labelledby="courts-transition-title">

@@ -20,7 +20,6 @@ export type ClubPlan = {
 /**
  * Geometría del club en unidades relativas (no son metros ni medidas constructivas).
  * Planta: x crece hacia el este, y hacia el sur; el norte queda arriba.
- * Copia tipada de docs/exploracion/refinamiento-b/geometria-club.json; una prueba detecta desvíos.
  * Nombre, superficie y fotografías de cada cancha siguen en `courts.ts`, la fuente única de contenido.
  * De oeste a este: 01, un jardín ancho (12), 02, un seto (6) y 03, que sobresale 6 del pabellón hacia el este.
  * Recorrido único: calle → portón → terraza de entrada → pabellón → galería → puerta de cada cancha. No hay otros

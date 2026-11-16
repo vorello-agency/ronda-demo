@@ -1,59 +1,78 @@
 # Ronda · Club de Tenis
 
-Landing editorial y sistema de reservas simulado de un club de tenis conceptual, diseñados y desarrollados por Vorello Agency. Construida con Next.js 16 (App Router), React 19, TypeScript y Tailwind CSS 4.
+> Landing editorial y sistema de reservas simulado para un club de tenis contemporáneo. Caso de estudio y proyecto conceptual para el portfolio profesional de **Vorello Agency**.
 
-> **Proyecto conceptual.** El club, las instalaciones y las actividades son ficticios, y las fotografías fueron generadas con IA. `/reservar` simula la disponibilidad y la confirmación: no se realizan reservas, inscripciones ni pagos reales, y nada se guarda al cerrar la página.
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178C6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-38B2AC?style=flat-square&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
-## Requisitos
+🌐 **Demo en vivo:** [ronda-demo.vorelloagency.com](https://ronda-demo.vorelloagency.com)
 
-- Node.js 22.14 o superior
-- npm
+<p align="center">
+  <img src="src/app/opengraph-image.jpg" alt="Ronda · Club de Tenis" width="100%" />
+</p>
 
-No se necesitan variables de entorno ni credenciales.
+---
 
-## Instalación
+## 1. Propósito del proyecto
+
+**Ronda** es un club de tenis conceptual con dos piezas: una landing editorial y un flujo de reservas. Demuestra dirección de arte digital, ingeniería frontend y lógica de producto probada, y cuenta con una identidad propia (cobalto, citrón y mineral) distinta a la de Lift.
+
+> **Aviso de transparencia:** proyecto conceptual con fines demostrativos para el portfolio de Vorello Agency. El club, sus instalaciones y sus actividades son ficticios, y las fotografías fueron generadas con IA. `/reservar` simula la disponibilidad y la confirmación: no se realizan reservas, inscripciones ni pagos reales, y nada se guarda al cerrar la página.
+
+## 2. Qué demuestra
+
+- **Reservas en cinco pasos:** fecha → cancha → horario → resumen → confirmación simulada. El estado vive en la URL, por lo que cada selección se puede compartir y recargar.
+- **Lógica pura y probada:** el reloj del club, la disponibilidad, los conflictos, la selección y los textos viven en `src/lib/booking/` sin depender de React. Se prueban con el corredor nativo de Node (más de 200 pruebas, sin dependencias de testing).
+- **Disponibilidad simulada y determinista:** igual para todos los visitantes y estable entre recargas. El horario es siempre el del club (Montevideo), sin importar la zona del dispositivo.
+- **Plano del club interactivo:** dibujado en SVG a partir de una geometría tipada, con vistas, paisaje y recorrido desde la calle hasta cada cancha.
+- **Accesibilidad:** diálogos nativos con foco contenido y cierre con `Escape`, desplegables nativos, navegación por teclado y respeto de `prefers-reduced-motion`.
+- **Rendimiento:** páginas prerrenderizadas como contenido estático, fuentes locales y fotografías WebP optimizadas.
+- **SEO técnico:** metadatos, Open Graph, canonical, `sitemap.xml`, `robots.txt` y `manifest`.
+
+## 3. Primeros pasos
+
+Requisitos: Node.js 22.14 o superior y npm. No se necesitan variables de entorno ni credenciales.
 
 ```sh
+git clone https://github.com/vorello-agency/ronda-demo.git
+cd ronda-demo
 npm ci
-```
-
-## Desarrollo
-
-```sh
 npm run dev
 ```
 
-Abrir `http://127.0.0.1:3000`. Para usar otro puerto: `npm run dev -- --port 3017`.
+Abrir `http://127.0.0.1:3000`. Para otro puerto: `npm run dev -- --port 3017`.
 
-## Calidad
+### Comandos
 
-```sh
-npm test
-npm run lint
-npm run typecheck
+| Comando             | Descripción                                                                  |
+| :------------------ | :--------------------------------------------------------------------------- |
+| `npm run dev`       | Servidor de desarrollo en `http://127.0.0.1:3000`                            |
+| `npm test`          | Pruebas de la lógica de reservas y del plano (`src/**/*.test.ts`)            |
+| `npm run lint`      | ESLint                                                                       |
+| `npm run typecheck` | Genera los tipos de rutas (`next typegen`) y ejecuta `tsc --noEmit`          |
+| `npm run build`     | Compila para producción con Webpack y prerenderiza `/` y `/reservar`         |
+| `npm run start`     | Sirve la compilación en `http://127.0.0.1:3000`                              |
+
+## 4. Estructura
+
+```text
+ronda-demo/
+├── public/images/          # Fotografías WebP optimizadas
+└── src/
+    ├── app/                # Layout, home, ruta reservar/, estilos, fuentes locales, íconos, sitemap, robots y manifest
+    ├── components/         # Secciones de la landing y atribución del estudio
+    │   └── booking/        # Interfaz de reservas: plano, horarios, resumen, confirmación y barra fija
+    ├── config/site.ts      # Identidad, URL pública, navegación y avisos
+    ├── data/               # Canchas y geometría del club
+    └── lib/booking/        # Lógica pura de reservas, con sus pruebas
 ```
 
-`test` ejecuta las pruebas de la lógica de reservas (`src/**/*.test.ts`) con el corredor nativo de Node, sin dependencias. `typecheck` genera los tipos de rutas de Next.js (`next typegen`) y luego ejecuta `tsc --noEmit`.
+## 5. Licencia y créditos
 
-## Producción
-
-```sh
-npm run build
-npm run start
-```
-
-`build` compila con Webpack (`next build --webpack`) y prerenderiza `/` y `/reservar` como contenido estático. `start` sirve la compilación en `http://127.0.0.1:3000`.
-
-## Estructura
-
-- `src/app/`: layout, home, ruta `reservar/`, estilos globales, fuentes locales, íconos (`icon.svg`, `apple-icon.png`, `favicon.ico`) e imagen para compartir (`opengraph-image.jpg`).
-- `src/components/`: secciones de la landing, enlaces de reserva, atribución del estudio y aviso de clases.
-- `src/components/booking/`: interfaz de reservas (plano, horarios, resumen, confirmación, barra fija) y su hoja `booking.css`.
-- `src/lib/booking/`: lógica de reservas pura y probada: reloj del club, disponibilidad simulada, URL, conflictos y textos.
-- `src/config/site.ts`: identidad, URL pública (base de los enlaces de la imagen para compartir), navegación y textos de los avisos.
-- `src/data/courts.ts` y `src/data/club-plan.ts`: datos de las tres canchas y geometría del club.
-- `public/images/`: fotografías WebP optimizadas.
-
-## Fuentes
-
-Anton y DM Sans se distribuyen localmente en `src/app/fonts/` bajo la SIL Open Font License 1.1. Sus licencias están junto a los archivos de fuente.
+- **Diseño y desarrollo:** [Vorello Agency](https://vorelloagency.com).
+- **Código:** [MIT](LICENSE). La licencia cubre el código, no las fotografías ni el logotipo de Vorello Agency.
+- **Fotografías:** generadas con IA, solo con fines demostrativos de este proyecto.
+- **Fuentes:** Anton y DM Sans, distribuidas localmente bajo la SIL Open Font License 1.1. Sus licencias están junto a los archivos en `src/app/fonts/`.
