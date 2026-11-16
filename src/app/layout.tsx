@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title,
   description,
-  robots: { index: false, follow: false },
+  alternates: { canonical: "/" },
+  robots: { index: true, follow: true },
   openGraph: { type: "website", locale: "es_UY", siteName: `${site.name} · ${site.descriptor}`, title, description },
   twitter: { card: "summary_large_image" },
 };

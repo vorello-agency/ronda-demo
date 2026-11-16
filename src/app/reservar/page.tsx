@@ -9,8 +9,9 @@ import { ClubPlanArt } from "@/components/booking/club-plan-art";
 import { ClubWayfindingArt } from "@/components/booking/club-wayfinding-art";
 import "@/components/booking/booking.css";
 
-// Solo título y descripción: `openGraph`, `robots` y el resto se heredan del layout raíz.
+// Título, descripción y canonical propios: `openGraph`, `robots` y el resto se heredan del layout raíz.
 export const metadata: Metadata = {
+  alternates: { canonical: "/reservar" },
   title: `Reservá tu cancha · ${site.name} · ${site.descriptor}`,
   description: `Demostración de reservas de ${site.name}: elegí cancha, día y horario con disponibilidad simulada. No se realizan reservas ni pagos reales. Proyecto conceptual de ${site.studio}.`,
 };
