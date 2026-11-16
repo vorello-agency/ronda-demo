@@ -18,6 +18,7 @@ type Props = { booking: Booking; wayfinding: ReactNode; titleRef: Ref<HTMLHeadin
  */
 export function BookingConfirmation({ booking, wayfinding, titleRef, onAgain }: Props) {
   const court = courts.find((item) => item.id === booking.court) ?? courts[0];
+  const [entry, courtPosition] = wayfindingText(booking.court).split(". ");
   return <section className="ronda-confirm" aria-labelledby="ronda-confirm-title">
     <div className="ronda-confirm-head">
       <p className="eyebrow">Reserva simulada · confirmada</p>
@@ -45,7 +46,7 @@ export function BookingConfirmation({ booking, wayfinding, titleRef, onAgain }: 
         <div className="ronda-wayfinding" data-court={booking.court}>{wayfinding}</div>
         <div>
           <h2 className="eyebrow">Cómo llegar</h2>
-          <p>{wayfindingText(booking.court)}</p>
+          <p>{entry}.<br />{courtPosition}</p>
         </div>
       </div>
 
