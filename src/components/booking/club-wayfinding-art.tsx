@@ -41,7 +41,16 @@ function WayfindingView({ view }: { view: PlanView }) {
   const h = roofHeight(view);
   const x1 = pavilion.x, x2 = pavilion.x + pavilion.width, y1 = pavilion.y, y2 = pavilion.y + pavilion.height;
   const r = (value: number) => Math.round(value * 10) / 10;
-  return <svg className={`ronda-wayfinding-view ronda-wayfinding-view--${view}`} viewBox={frame(view)} aria-hidden="true" focusable="false">
+  const box = frame(view);
+  const [bx, by, bw, bh] = box.split(" ").map(Number);
+  return <svg className={`ronda-wayfinding-view ronda-wayfinding-view--${view}`} viewBox={box} aria-hidden="true" focusable="false">
+    {/* El recorrido se dibuja al mostrarse la confirmación: una máscara con su mismo trazado lo descubre de la salida
+        del pabellón a la puerta de la cancha. Así el recorrido conserva su línea punteada mientras aparece. */}
+    <defs>
+      {courts.map((court) => <mask key={court.id} id={`ronda-route-${view}-${court.id}`} maskUnits="userSpaceOnUse" x={bx} y={by} width={bw} height={bh}>
+        <polyline className="w-route-reveal" pathLength={1} points={points(view, courtRoute(court))} />
+      </mask>)}
+    </defs>
     {/* Van antes que el pabellón, que tiene relleno y tapa los troncos que quedan detrás. */}
     <path className="w-pines" d={hints(view).map(({ base, cx, cy, rx, ry }) =>
       `M${r(base[0])} ${r(base[1])}V${r(cy + ry)}M${r(cx - rx)} ${r(cy)}a${r(rx)} ${r(ry)} 0 1 0 ${r(rx * 2)} 0a${r(rx)} ${r(ry)} 0 1 0 ${r(-rx * 2)} 0`).join("")} />
@@ -56,6 +65,6 @@ function WayfindingView({ view }: { view: PlanView }) {
       data-court-id={court.id}
       points={points(view, [[court.x, court.y], [court.x + court.width, court.y], [court.x + court.width, court.y + court.height], [court.x, court.y + court.height]])}
     />)}
-    {courts.map((court) => <polyline key={court.id} className="w-route" data-court-id={court.id} points={points(view, courtRoute(court))} />)}
+    {courts.map((court) => <polyline key={court.id} className="w-route" data-court-id={court.id} points={points(view, courtRoute(court))} mask={`url(#ronda-route-${view}-${court.id})`} />)}
   </svg>;
 }

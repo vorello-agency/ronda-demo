@@ -168,7 +168,7 @@ function Flow({ art, intro, wayfinding, nowMs }: Art & { nowMs: number }) {
 
   const bar = barText(selection, nowMs);
 
-  return <>{intro}<div className="ronda-booking-flow" ref={root}>
+  return <>{intro}<div className="ronda-booking-flow" data-motion={state.announcement.id > 0 ? "ready" : undefined} ref={root}>
     {status}
 
     <DayRibbon days={dayOptions(nowMs)} selected={selection.date} onSelect={(date) => change({ type: "date", date })} />
@@ -190,7 +190,7 @@ function Flow({ art, intro, wayfinding, nowMs }: Art & { nowMs: number }) {
           attributes={planStateAttributes(selection, ctx)}
           onSelect={(court) => change({ type: "court", court })}
         />
-        {notice?.origin === "court" && <BookingNotice notice={notice.notice} onPick={(alternative) => pick(alternative, "court")} />}
+        {notice?.origin === "court" && <BookingNotice key={JSON.stringify(notice.notice)} notice={notice.notice} onPick={(alternative) => pick(alternative, "court")} />}
       </section>
 
       <div className="ronda-booking-side">
@@ -203,8 +203,9 @@ function Flow({ art, intro, wayfinding, nowMs }: Art & { nowMs: number }) {
               {clubNote && <> <span className="ronda-booking-meta-note">{clubNote}</span></>}
             </p>
           </div>
-          <HourPicker periods={periods} selectedHour={selection.hour} selectedCourt={selection.court} onSelect={(hour) => change({ type: "hour", hour })} />
-          {notice?.origin === "hour" && <BookingNotice notice={notice.notice} onPick={(alternative) => pick(alternative, "hour")} />}
+          {/* La clave es el día: al cambiarlo, los horarios se vuelven a montar y su disponibilidad entra con un fundido. */}
+          <HourPicker key={selection.date} periods={periods} selectedHour={selection.hour} selectedCourt={selection.court} onSelect={(hour) => change({ type: "hour", hour })} />
+          {notice?.origin === "hour" && <BookingNotice key={JSON.stringify(notice.notice)} notice={notice.notice} onPick={(alternative) => pick(alternative, "hour")} />}
         </section>
         <BookingSummary selection={selection} onJump={jump} onConfirm={confirm} />
       </div>

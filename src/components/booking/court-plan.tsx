@@ -52,7 +52,8 @@ export function CourtPlan({ art, options, hour, attributes, onSelect }: Props) {
         >
           <span className="ronda-plan-tag-number" aria-hidden="true">{court.id}</span>
           <span className="ronda-plan-tag-name" aria-hidden="true">{court.name}</span>
-          <span className="ronda-plan-tag-status" aria-hidden="true"><TagStatus text={courtStatusText(option)} /></span>
+          {/* La clave es el texto: si cambia (otro día, otra hora), el estado se vuelve a montar y entra con un fundido. */}
+          <span key={courtStatusText(option)} className="ronda-plan-tag-status" aria-hidden="true"><TagStatus text={courtStatusText(option)} /></span>
         </button>;
       })}
     </div>

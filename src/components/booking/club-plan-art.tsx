@@ -403,6 +403,12 @@ function Volumes({ view }: { view: PlanView }) {
     <g className="ronda-plan-rings" transform={groundTransform(view)}>
       {courts.map((court) => <g key={court.id} data-court-id={court.id}>
         <rect className="c-ring" x={court.x - 1.4} y={court.y - 1.4} width={court.width + 2.8} height={court.height + 2.8} />
+        {/* El anillo de la cancha elegida se dibuja alrededor de ella al elegirla: una máscara con su mismo contorno
+            lo descubre (ver .c-ring-reveal). El anillo conserva su grosor en pantalla; la máscara, no hace falta. */}
+        <mask id={`ronda-ring-${view}-${court.id}`} maskUnits="userSpaceOnUse" x={court.x - 4} y={court.y - 4} width={court.width + 8} height={court.height + 8}>
+          <rect className="c-ring-reveal" pathLength={1} x={court.x - 1.4} y={court.y - 1.4} width={court.width + 2.8} height={court.height + 2.8} />
+        </mask>
+        <rect className="c-ring-draw" mask={`url(#ronda-ring-${view}-${court.id})`} x={court.x - 1.4} y={court.y - 1.4} width={court.width + 2.8} height={court.height + 2.8} />
       </g>)}
     </g>
     {courts.map((court) => {

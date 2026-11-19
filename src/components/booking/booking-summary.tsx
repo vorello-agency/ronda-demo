@@ -42,7 +42,7 @@ export function BookingSummary({ selection, onJump, onConfirm }: Props) {
         onClick={() => onJump(item.target)}
       >
         <span className="ronda-booking-summary-label" aria-hidden="true">{item.label}</span>
-        <span className="ronda-booking-summary-value" aria-hidden="true">{item.value ?? item.placeholder}</span>
+        <span key={item.value ?? item.placeholder} className="ronda-booking-summary-value" aria-hidden="true">{item.value ?? item.placeholder}</span>
       </button>)}
     </div>
     {court && hour && <button type="button" className="button ronda-booking-confirm" onClick={onConfirm}>

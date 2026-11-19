@@ -181,9 +181,17 @@ button.ronda-booking-day { position: relative; border: 0; background: none; colo
 .ronda-plan[data-court="01"] [data-court-id="01"] .c-veil,
 .ronda-plan[data-court="02"] [data-court-id="02"] .c-veil,
 .ronda-plan[data-court="03"] [data-court-id="03"] .c-veil { opacity: 0; }
-.ronda-plan[data-court="01"] [data-court-id="01"] .c-ring,
-.ronda-plan[data-court="02"] [data-court-id="02"] .c-ring,
-.ronda-plan[data-court="03"] [data-court-id="03"] .c-ring { stroke: var(--color-ink); stroke-width: 3.5; }
+/* La cancha elegida no usa .c-ring sino .c-ring-draw: el mismo anillo, que se dibuja en el sentido de las agujas
+   del reloj al elegirla. Sin animación (movimiento reducido) queda entero desde el primer cuadro. */
+.ronda-plan-svg .c-ring-draw { fill: none; stroke: var(--color-ink); stroke-width: 3.5; vector-effect: non-scaling-stroke; visibility: hidden; }
+.ronda-plan-svg .c-ring-reveal { fill: none; stroke: #fff; stroke-width: 3; stroke-dasharray: 1; stroke-dashoffset: 0; }
+.ronda-plan[data-court="01"] [data-court-id="01"] .c-ring-draw,
+.ronda-plan[data-court="02"] [data-court-id="02"] .c-ring-draw,
+.ronda-plan[data-court="03"] [data-court-id="03"] .c-ring-draw { visibility: visible; }
+.ronda-plan[data-court="01"] [data-court-id="01"] .c-ring-reveal,
+.ronda-plan[data-court="02"] [data-court-id="02"] .c-ring-reveal,
+.ronda-plan[data-court="03"] [data-court-id="03"] .c-ring-reveal { animation: ronda-ring-draw 520ms var(--ease-out) backwards; }
+@keyframes ronda-ring-draw { from { stroke-dashoffset: 1; } }
 .ronda-plan[data-court="01"] [data-court-id="01"] .c-edge,
 .ronda-plan[data-court="02"] [data-court-id="02"] .c-edge,
 .ronda-plan[data-court="03"] [data-court-id="03"] .c-edge,
@@ -250,7 +258,7 @@ button.ronda-plan-tag:focus-visible { outline-offset: 2px; }
 /* La cancha elegida conserva su anillo de tinta aunque se pase o se enfoque. */
 .ronda-plan[data-court="01"] [data-court-id="01"] .c-ring,
 .ronda-plan[data-court="02"] [data-court-id="02"] .c-ring,
-.ronda-plan[data-court="03"] [data-court-id="03"] .c-ring { stroke: var(--color-ink); stroke-dasharray: none; }
+.ronda-plan[data-court="03"] [data-court-id="03"] .c-ring { stroke: transparent; stroke-dasharray: none; }
 
 /* Horarios. La grilla tiene seis columnas (la franja más larga) que se achican con el panel, sin desbordar. */
 .ronda-booking-hours { display: grid; gap: 22px; }
@@ -303,7 +311,7 @@ button.ronda-booking-hour { border: 0; background: none; color: inherit; font: i
 .ronda-booking-placeholder.is-count { width: 22px; height: 10px; }
 
 /* Aviso de conflicto: qué se conservó, qué se liberó y alternativas de un toque. */
-.ronda-booking-notice { display: grid; gap: 12px; margin-top: 24px; padding: 18px 22px 20px; background: var(--color-citron); color: var(--color-ink); }
+.ronda-booking-notice { display: grid; gap: 12px; margin-top: 24px; padding: 18px 22px 20px; background: var(--color-citron); color: var(--color-ink); animation: ronda-drop-in 220ms var(--ease-out) backwards; }
 .ronda-booking-notice p { margin: 0; font-size: 17px; line-height: var(--leading-body); }
 .ronda-booking-notice-options { display: flex; flex-wrap: wrap; gap: 8px 28px; }
 .ronda-booking-notice-options button { display: inline-flex; align-items: center; gap: 10px; min-height: 44px; padding: 0; border: 0; border-bottom: 1px solid var(--color-ink); background: none; color: inherit; font: inherit; font-size: 16px; font-weight: 500; }
@@ -323,7 +331,7 @@ button.ronda-booking-summary-item { border: 0; background: none; color: inherit;
 .ronda-booking-summary-item.is-empty .ronda-booking-summary-value { font-family: var(--font-body); font-size: 19px; line-height: var(--leading-ui); letter-spacing: -.02em; text-transform: none; color: var(--ronda-muted); }
 button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 7px; }
 /* Renglón de «Tu turno»: el epígrafe a la izquierda y, a la derecha, superficie y duración, como en los otros encabezados. */
-.ronda-booking-ticket-head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; }
+.ronda-booking-ticket-head { display: flex; align-items: baseline; justify-content: space-between; gap: 20px; min-height: calc(13px * var(--leading-ui)); }
 .ronda-booking-confirm { margin-top: 24px; }
 
 /* Pie */
@@ -364,7 +372,8 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
   .ronda-booking-stage { display: contents; }
   /* Los 14 horarios (08 a 21) son dos filas de 7, como los días: las franjas se disuelven en una sola grilla y sus
      rótulos se ocultan, porque en formato de 24 horas el número ya dice si es mañana, tarde o noche. */
-  .ronda-booking-hours { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; }
+  /* Conserva las dos filas del esqueleto aunque hoy queden pocos horarios: no sube el resumen al hidratar. */
+  .ronda-booking-hours { grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 2px; min-height: 162px; align-content: start; }
   .ronda-booking-hour-row, .ronda-booking-hour-list { display: contents; }
   .ronda-booking-period { display: none; }
   .ronda-booking-where { grid-area: where; }
@@ -520,6 +529,10 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
 .ronda-wayfinding .w-pines { fill: none; stroke: var(--confirm-soft); stroke-width: 1; vector-effect: non-scaling-stroke; opacity: .5; }
 .ronda-wayfinding .w-pavilion polygon { fill: var(--color-cobalt); }
 .ronda-wayfinding .w-route { display: none; stroke: var(--color-mineral); stroke-width: 1.6; stroke-dasharray: 3 3; }
+/* Máscara del recorrido: se descubre de la salida del pabellón a la puerta, después de que entra la confirmación.
+   Sin animación (movimiento reducido) el recorrido está completo desde el principio. */
+.ronda-wayfinding .w-route-reveal { fill: none; stroke: #fff; stroke-width: 28; stroke-linecap: round; stroke-linejoin: round; vector-effect: none; stroke-dasharray: 1; stroke-dashoffset: 0; animation: ronda-route-draw 1100ms var(--ease-out) 560ms backwards; }
+@keyframes ronda-route-draw { from { stroke-dashoffset: 1; } }
 .ronda-wayfinding[data-court="01"] .w-court[data-court-id="01"],
 .ronda-wayfinding[data-court="02"] .w-court[data-court-id="02"],
 .ronda-wayfinding[data-court="03"] .w-court[data-court-id="03"] { fill: var(--color-citron); stroke: var(--color-citron); }
@@ -602,3 +615,21 @@ button.ronda-booking-summary-item:hover .ronda-booking-summary-value { text-deco
   .ronda-wayfinding[data-court="02"] .w-court[data-court-id="02"],
   .ronda-wayfinding[data-court="03"] .w-court[data-court-id="03"] { fill: Highlight; stroke: Highlight; }
 }
+
+/* Movimiento de /reservar. Solo acompaña cambios que hizo la persona; con movimiento reducido (globals.css) todo
+   aparece en su lugar, porque los keyframes solo definen el punto de partida. */
+@keyframes ronda-drop-in { from { opacity: 0; transform: translateY(-6px); } }
+@keyframes ronda-rise-in { from { opacity: 0; transform: translateY(8px); } }
+@keyframes ronda-fade-in { from { opacity: 0; } }
+/* El esqueleto y el primer montaje son estáticos. Se habilita el movimiento después de la primera interacción. */
+.ronda-booking-flow[data-motion="ready"] :is(.ronda-booking-hour-marks, .ronda-booking-hour-count, .ronda-plan-tag-status) { animation: ronda-fade-in 180ms var(--ease-out) backwards; }
+/* «Tu turno»: el dato nuevo entra con un fundido y el botón de confirmar sube apenas al completarse la elección. */
+.ronda-booking-flow[data-motion="ready"] .ronda-booking-summary-value { animation: ronda-fade-in 200ms var(--ease-out) backwards; }
+.ronda-booking-flow[data-motion="ready"] .ronda-booking-confirm { animation: ronda-rise-in 260ms var(--ease-out) backwards; }
+/* Confirmación: entra escalonada antes de que se trace el recorrido de «Cómo llegar». */
+.ronda-confirm-head { animation: ronda-rise-in 300ms var(--ease-out) backwards; }
+.ronda-confirm-photo { animation: ronda-fade-in 320ms var(--ease-out) 30ms backwards; }
+.ronda-confirm-score { animation: ronda-rise-in 300ms var(--ease-out) 60ms backwards; }
+.ronda-confirm-way { animation: ronda-rise-in 300ms var(--ease-out) 100ms backwards; }
+.ronda-confirm-note { animation: ronda-rise-in 280ms var(--ease-out) 140ms backwards; }
+.ronda-confirm-actions { animation: ronda-rise-in 260ms var(--ease-out) 180ms backwards; }
