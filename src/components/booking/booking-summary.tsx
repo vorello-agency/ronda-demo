@@ -3,7 +3,7 @@
 import { ArrowRightIcon } from "@phosphor-icons/react";
 import { courts } from "@/data/courts";
 import { SLOT_MINUTES, weekday } from "@/lib/booking/club-time";
-import { WEEKDAYS_SHORT, formatHour, slotEndText } from "@/lib/booking/copy";
+import { DEMO_CONFIRM_NOTE, WEEKDAYS_SHORT, firstMissing, formatHour, missingText, slotEndText } from "@/lib/booking/copy";
 import type { Selection } from "@/lib/booking/types";
 
 export type SummaryTarget = "court" | "date" | "hour";
@@ -12,21 +12,25 @@ type Props = { selection: Selection; onJump: (target: SummaryTarget) => void; on
 
 /**
  * «Tu turno»: una línea con cancha, día y hora. Cada dato lleva al control que lo cambia.
- * Con cancha y hora elegidas aparece la acción principal: confirmar la reserva simulada.
+ * La acción principal, confirmar la reserva simulada, se ve siempre: apagada mientras falte la cancha o la hora (y dice
+ * qué falta; al activarla lleva al control que falta) y, con todo elegido, aclara que no se pide nombre ni pago.
  */
 export function BookingSummary({ selection, onJump, onConfirm }: Props) {
   const court = courts.find((item) => item.id === selection.court);
   const day = `${WEEKDAYS_SHORT[weekday(selection.date)]} ${selection.date.slice(8, 10)}`;
   const hour = selection.hour === null ? null : formatHour(selection.hour);
   const items: { target: SummaryTarget; label: string; value: string | null; placeholder: string }[] = [
-    { target: "court", label: "Cancha", value: court?.name ?? null, placeholder: "Elegí cancha" },
+    { target: "court", label: "Cancha", value: court?.name ?? null, placeholder: "Elegir cancha" },
     { target: "date", label: "Día", value: day, placeholder: "" },
-    { target: "hour", label: "Hora", value: hour, placeholder: "Elegí hora" },
+    { target: "hour", label: "Hora", value: hour, placeholder: "Elegir hora" },
   ];
   // Va en el renglón de «Tu turno», como los datos de los otros encabezados. No repite la hora, que ya está abajo:
   // suma la superficie y cuánto dura (sin hora) o hasta cuándo (con hora).
   const end = selection.hour === null ? `Turno de ${SLOT_MINUTES} minutos` : slotEndText(selection.hour);
   const details = court ? `${court.surface} · ${end}` : end;
+
+  const missing = firstMissing(selection);
+  const complete = missing === null;
 
   return <section className="ronda-booking-ticket" aria-labelledby="ronda-ticket-title">
     <div className="ronda-booking-ticket-head">
@@ -45,8 +49,15 @@ export function BookingSummary({ selection, onJump, onConfirm }: Props) {
         <span key={item.value ?? item.placeholder} className="ronda-booking-summary-value" aria-hidden="true">{item.value ?? item.placeholder}</span>
       </button>)}
     </div>
-    {court && hour && <button type="button" className="button ronda-booking-confirm" onClick={onConfirm}>
+    <button
+      type="button"
+      className="button ronda-booking-confirm"
+      aria-disabled={complete ? undefined : true}
+      aria-describedby="ronda-confirm-help"
+      onClick={() => (missing ? onJump(missing) : onConfirm())}
+    >
       Confirmar reserva simulada <ArrowRightIcon size={20} weight="light" aria-hidden="true" />
-    </button>}
+    </button>
+    <p className="ronda-booking-confirm-help" id="ronda-confirm-help">{missingText(selection) ?? DEMO_CONFIRM_NOTE}</p>
   </section>;
 }

@@ -24,10 +24,9 @@ export function DayRibbon({ days, selected, onSelect }: { days: DayOption[]; sel
 
   return <section className="ronda-booking-days" aria-labelledby="ronda-days-title">
     <div className="ronda-booking-month">
-      {/* «¿Qué día?» se ve solo desde 1280 px, junto a «¿Dónde?» y «¿A qué hora?»; antes, el mes solo, como epígrafe. */}
+      {/* «Elegir día» es un título como «Elegir hora» y «Elegir cancha», con el mes a la derecha. */}
       <h2 className="eyebrow" id="ronda-days-title">
-        <span className="ronda-booking-days-question">¿Qué día? </span>
-        <span className="sr-only ronda-booking-days-sr">Día, </span>
+        <span className="ronda-booking-days-question">Elegir día</span>
         <span className="ronda-booking-days-month">{monthsLabel(days.map((day) => day.date))}</span>
       </h2>
     </div>

@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useSearchParams } from "next/navigation";
 import { confirmSelection } from "@/lib/booking/bookings";
-import { SLOT_LENGTH_TEXT, WEEKDAYS_LONG, barText, changeAnnouncement, clubTimeNote, confirmFailedText, correctionText, formatHour, noticeAnnouncement } from "@/lib/booking/copy";
+import { SLOT_LENGTH_TEXT, WEEKDAYS_LONG, barText, changeAnnouncement, clubTimeNote, confirmFailedText, correctionText, firstMissing, formatHour, noticeAnnouncement } from "@/lib/booking/copy";
 import { applyChange, revalidate, type Alternative, type Change, type Notice } from "@/lib/booking/conflicts";
 import { today, weekday, type Hour, type IsoDate } from "@/lib/booking/club-time";
 import { courtOptions, dayOptions, hourPeriods, noticeOrigin } from "@/lib/booking/flow-view";
@@ -105,7 +105,7 @@ function Flow({ art, intro, wayfinding, nowMs }: Art & { nowMs: number }) {
       pinDate: previous.pinDate || next.type === "date",
       notice: outcome.notice ? { notice: outcome.notice, origin: noticeOrigin(outcome.notice, origin) } : null,
       corrections: [],
-      announcement: { text: changeAnnouncement(next, outcome), id: previous.announcement.id + 1 },
+      announcement: { text: changeAnnouncement(next, outcome, selection), id: previous.announcement.id + 1 },
       bookings: previous.bookings,
       confirmed: null,
     }));
@@ -132,9 +132,11 @@ function Flow({ art, intro, wayfinding, nowMs }: Art & { nowMs: number }) {
     }));
   }
 
-  /** «Revisar» en la barra: lleva a «Tu turno» y deja el foco en la confirmación. */
+  /** Botón de la barra: con la selección completa, «Revisar» lleva a «Tu turno» y deja el foco en la confirmación; si falta algo, lleva a elegirlo. */
   function review() {
-    focusIn(".ronda-booking-confirm", true);
+    const missing = firstMissing(selection);
+    if (missing) jump(missing);
+    else focusIn(".ronda-booking-confirm", true);
   }
 
   function pick(alternative: Alternative, origin: Origin) {
@@ -152,7 +154,7 @@ function Flow({ art, intro, wayfinding, nowMs }: Art & { nowMs: number }) {
   function jump(target: SummaryTarget) {
     if (target === "court") focusIn('[data-court-tag][aria-pressed="true"], [data-court-tag]', true);
     else if (target === "date") focusIn('.ronda-booking-day[aria-pressed="true"]', true);
-    else focusIn('.ronda-booking-hour[aria-pressed="true"], .ronda-booking-hour:not(.is-full)', true);
+    else focusIn('.ronda-booking-hour[aria-pressed="true"], .ronda-booking-hour.is-free', true);
   }
 
   const status = <p className="sr-only" role="status"><span key={announcement.id}>{announcement.text}</span></p>;
@@ -175,12 +177,32 @@ function Flow({ art, intro, wayfinding, nowMs }: Art & { nowMs: number }) {
 
     {state.corrections.length > 0 && <p className="ronda-booking-correction">{state.corrections.map(correctionText).join(" ")}</p>}
 
-    <p className="ronda-booking-lead">Elegí cancha u horario, en el orden que prefieras.</p>
-
+    {/* Orden del DOM = orden en celular y tablet: hora, cancha y tu turno. Desde 1024 px la grilla pone el plano a la izquierda. */}
     <div className="ronda-booking-stage">
+      <section className="ronda-booking-when" aria-labelledby="ronda-when-title">
+        <div className="ronda-booking-panel-head">
+          <h2 className="ronda-booking-question" id="ronda-when-title">Elegir hora</h2>
+          <p className="ronda-booking-meta">
+            {SLOT_LENGTH_TEXT}
+            {/* El espacio separa las dos frases para lectores de pantalla; visualmente la nota va en su renglón. */}
+            {clubNote && <> <span className="ronda-booking-meta-note">{clubNote}</span></>}
+          </p>
+        </div>
+        {/* La clave es el día: al cambiarlo, los horarios se vuelven a montar y su disponibilidad entra con un fundido. */}
+        <HourPicker
+          key={selection.date}
+          periods={periods}
+          selectedHour={selection.hour}
+          selectedCourt={selection.court}
+          onSelect={(hour) => change({ type: "hour", hour })}
+          onCourt={(court) => change({ type: "court", court }, "hour")}
+        />
+        {notice?.origin === "hour" && <BookingNotice key={JSON.stringify(notice.notice)} notice={notice.notice} onPick={(alternative) => pick(alternative, "hour")} />}
+      </section>
+
       <section className="ronda-booking-where" aria-labelledby="ronda-where-title">
         <div className="ronda-booking-panel-head">
-          <h2 className="ronda-booking-question" id="ronda-where-title">¿Dónde?</h2>
+          <h2 className="ronda-booking-question" id="ronda-where-title">Elegir cancha</h2>
           <p className="ronda-booking-meta">{whereMeta(selection.date, selection.hour, nowMs)}</p>
         </div>
         <CourtPlan
@@ -193,25 +215,10 @@ function Flow({ art, intro, wayfinding, nowMs }: Art & { nowMs: number }) {
         {notice?.origin === "court" && <BookingNotice key={JSON.stringify(notice.notice)} notice={notice.notice} onPick={(alternative) => pick(alternative, "court")} />}
       </section>
 
-      <div className="ronda-booking-side">
-        <section aria-labelledby="ronda-when-title">
-          <div className="ronda-booking-panel-head">
-            <h2 className="ronda-booking-question" id="ronda-when-title">¿A qué hora?</h2>
-            <p className="ronda-booking-meta">
-              {SLOT_LENGTH_TEXT}
-              {/* El espacio separa las dos frases para lectores de pantalla; visualmente la nota va en su renglón. */}
-              {clubNote && <> <span className="ronda-booking-meta-note">{clubNote}</span></>}
-            </p>
-          </div>
-          {/* La clave es el día: al cambiarlo, los horarios se vuelven a montar y su disponibilidad entra con un fundido. */}
-          <HourPicker key={selection.date} periods={periods} selectedHour={selection.hour} selectedCourt={selection.court} onSelect={(hour) => change({ type: "hour", hour })} />
-          {notice?.origin === "hour" && <BookingNotice key={JSON.stringify(notice.notice)} notice={notice.notice} onPick={(alternative) => pick(alternative, "hour")} />}
-        </section>
-        <BookingSummary selection={selection} onJump={jump} onConfirm={confirm} />
-      </div>
+      <BookingSummary selection={selection} onJump={jump} onConfirm={confirm} />
     </div>
 
-    <BookingBar text={bar} visible={!ticketVisible} complete={selection.court !== null && selection.hour !== null} onReview={review} />
+    <BookingBar text={bar} visible={!ticketVisible} missing={firstMissing(selection)} onReview={review} />
   </div></>;
 }
 

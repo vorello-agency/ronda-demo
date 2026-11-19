@@ -32,15 +32,24 @@ describe("applyChange · cancha y horario en cualquier orden", () => {
     assert.ok(alternativesAreFree(date, outcome.notice.alternatives));
   });
 
-  it("con una cancha elegida, elegir una hora sin lugar libera la cancha y ofrece primero otra cancha", () => {
+  it("con una cancha elegida, activar una hora tachada no cambia nada, avisa y ofrece primero otra cancha", () => {
     const { date, hour, court } = busyForCourt();
-    const outcome = applyChange({ date, court, hour: null }, { type: "hour", hour }, ctx);
-    assert.deepEqual(outcome.selection, { date, court: null, hour });
+    const selection = { date, court, hour: null };
+    const outcome = applyChange(selection, { type: "hour", hour }, ctx);
+    assert.equal(outcome.selection, selection);
     assert.equal(outcome.notice?.kind, "hour-busy");
     if (outcome.notice?.kind !== "hour-busy") return;
     assert.deepEqual(outcome.notice.alternatives[0], { court: freeCourtsAt(date, hour, ctx)[0], hour });
     assert.deepEqual(outcome.notice.alternatives[1], { court, hour: nearestFreeHour(date, court, hour, ctx) });
     assert.ok(alternativesAreFree(date, outcome.notice.alternatives));
+  });
+
+  it("«Todas» deja la cancha sin elegir y conserva la hora, sin avisos", () => {
+    const { date, hour, court } = findScenario((day, h) => {
+      const free = freeCourtsAt(day, h, ctx)[0];
+      return free ? { date: day, hour: h, court: free } : null;
+    });
+    assert.deepEqual(applyChange({ date, court, hour }, { type: "court", court: null }, ctx), { selection: { date, court: null, hour }, notice: null });
   });
 
   it("si cancha y hora son compatibles, se conservan sin avisos, en cualquier orden", () => {
@@ -195,7 +204,9 @@ describe("invariantes bajo cambios arbitrarios", () => {
       const date = pick(dates.concat(["2026-11-05", "2026-11-20"]), step, "date");
       const court: CourtId = pick(COURT_IDS, step, "court");
       const hour: Hour = pick(HOURS, step, "hour");
-      const change = kind === "date" ? { type: kind, date } : kind === "court" ? { type: kind, court } : kind === "hour" ? { type: kind, hour } : { type: kind, court, hour };
+      // A veces la cancha es «Todas» (null): el control sobre la grilla puede dejarla sin elegir.
+      const filter: CourtId | null = pick([...COURT_IDS, null], step, "filter");
+      const change = kind === "date" ? { type: kind, date } : kind === "court" ? { type: kind, court: filter } : kind === "hour" ? { type: kind, hour } : { type: kind, court, hour };
       const outcome = applyChange(selection, change, ctx);
       selection = outcome.selection;
       if (outcome.notice) seen.add(outcome.notice.kind);

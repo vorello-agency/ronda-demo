@@ -29,22 +29,15 @@ export function monthsLabel(dates: readonly IsoDate[]): string {
 }
 
 /**
- * Tono de un horario:
- *   «free»  hay lugar (en la cancha elegida, o en alguna si no hay cancha).
- *   «alt»   «otra cancha»: sin lugar en la cancha elegida, pero sí en otra. Sigue siendo elegible y abre alternativas.
- *   «full»  tachado y «completo»: ninguna cancha tiene lugar. Es lo único que se presenta como no disponible.
+ * Tono de un horario, relativo a la cancha elegida (o a todas, si no hay):
+ *   «free»  hay lugar: se puede elegir.
+ *   «none»  tachado y «sin lugar»: no se puede elegir (aria-disabled; al activarlo, explica por qué).
+ * No hay un tercer estado: si la cancha elegida no tiene lugar pero otra sí, la hora va tachada y la nota bajo la
+ * grilla (`hourNote`) ofrece ver todas las canchas.
  */
-export type HourTone = "free" | "alt" | "full";
+export type HourTone = "free" | "none";
 export type HourOption = { hour: Hour; free: CourtId[]; busy: CourtId[]; tone: HourTone };
 export type HourPeriod = { label: string; options: HourOption[] };
-
-/**
- * Puntos bajo un horario: uno por cancha, en el orden del plano (01 Club, 02 Central, 03 Jardín), lleno si tiene lugar.
- * Sin puntos cuando no hay ninguna libre: ese horario ya dice «completo».
- */
-export function hourCourtMarks(option: Pick<HourOption, "free" | "tone">): { court: CourtId; free: boolean }[] {
-  return option.tone === "full" ? [] : COURT_IDS.map((court) => ({ court, free: option.free.includes(court) }));
-}
 
 /** Horarios del día agrupados por franja. Los que ya empezaron no se muestran; una franja vacía tampoco. */
 export function hourPeriods(selection: Selection, ctx: Context): HourPeriod[] {
@@ -53,10 +46,28 @@ export function hourPeriods(selection: Selection, ctx: Context): HourPeriod[] {
     label: period.label,
     options: period.hours.filter((hour) => bookable.has(hour)).map((hour) => {
       const { free, busy } = hourAvailability(selection.date, hour, ctx);
-      const tone: HourTone = free.length === 0 ? "full" : selection.court !== null && !free.includes(selection.court) ? "alt" : "free";
-      return { hour, free, busy, tone };
+      const open = selection.court === null ? free.length > 0 : free.includes(selection.court);
+      return { hour, free, busy, tone: open ? "free" : "none" } satisfies HourOption;
     }),
   })).filter((period) => period.options.length > 0);
+}
+
+/**
+ * Nota bajo la grilla, solo con una cancha elegida y alguna hora tachada que tenga lugar en otra cancha:
+ *   «day»    la cancha no tiene lugar en todo el día;
+ *   «all»    todas las horas tachadas tienen lugar en otra cancha;
+ *   «some»   solo algunas (otras no tienen lugar en ninguna).
+ * En todos los casos remite a «Todas», en el control sobre la grilla.
+ */
+export type HourNote = { kind: "day" | "all" | "some"; court: CourtId } | null;
+
+export function hourNote(periods: readonly HourPeriod[], court: CourtId | null): HourNote {
+  if (court === null) return null;
+  const options = periods.flatMap((period) => period.options);
+  const struck = options.filter((option) => option.tone === "none");
+  if (!struck.some((option) => option.free.length > 0)) return null;
+  if (struck.length === options.length) return { kind: "day", court };
+  return { kind: struck.every((option) => option.free.length > 0) ? "all" : "some", court };
 }
 
 /**
@@ -83,11 +94,10 @@ export function courtOptions(selection: Selection, ctx: Context): CourtOption[] 
 }
 
 /**
- * Dónde se muestra un aviso: junto al plano si lo originó una cancha, junto a los horarios en el resto de los casos.
- * Una alternativa que dejó de estar libre se avisa donde estaba la alternativa (`previous`).
+ * Dónde se muestra un aviso: junto al control que lo originó (`origin`) si fue una cancha o una alternativa
+ * (la cancha se elige en el plano o en «Ver horarios de»), junto a los horarios en el resto de los casos.
  */
-export function noticeOrigin(notice: Notice, previous: "court" | "hour" = "hour"): "court" | "hour" {
-  if (notice.kind === "court-busy") return "court";
-  if (notice.kind === "pick-unavailable") return previous;
+export function noticeOrigin(notice: Notice, origin: "court" | "hour"): "court" | "hour" {
+  if (notice.kind === "court-busy" || notice.kind === "pick-unavailable") return origin;
   return "hour";
 }

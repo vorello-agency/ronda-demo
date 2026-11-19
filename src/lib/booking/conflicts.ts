@@ -12,7 +12,10 @@ export type Notice =
    * `yours`: el turno no está ocupado por otros, la persona ya lo reservó en esta visita.
    */
   | { kind: "court-busy"; court: CourtId; hour: Hour; alternatives: Alternative[]; yours?: true }
-  /** Se eligió un horario sin lugar en la cancha elegida: se conserva el horario y se libera la cancha. */
+  /**
+   * Se activó un horario tachado porque la cancha elegida no tiene lugar (otra sí): no cambia nada, el aviso explica
+   * por qué y ofrece alternativas de un toque.
+   */
   | { kind: "hour-busy"; court: CourtId; hour: Hour; alternatives: Alternative[]; yours?: true }
   /** Ninguna cancha tiene lugar a esa hora. */
   | { kind: "hour-full"; hour: Hour }
@@ -27,7 +30,8 @@ export type Notice =
 
 export type Change =
   | { type: "date"; date: IsoDate }
-  | { type: "court"; court: CourtId }
+  /** `null` es «Todas»: deja la cancha sin elegir. */
+  | { type: "court"; court: CourtId | null }
   | { type: "hour"; hour: Hour }
   | { type: "pick"; court: CourtId; hour: Hour };
 
@@ -54,7 +58,8 @@ function alternativesFor(origin: "court" | "hour", date: IsoDate, court: CourtId
 
 /**
  * Aplica un cambio de la persona. Manda la última elección: si choca con la anterior, la anterior se libera
- * y el aviso trae alternativas de un toque. Nunca se borra una elección en silencio.
+ * y el aviso trae alternativas de un toque. Nunca se borra una elección en silencio. La excepción son los horarios
+ * tachados (sin lugar en la cancha elegida o en ninguna): no se pueden elegir, así que activarlos solo avisa.
  * Es total: un cambio que no corresponde (día fuera del horizonte, horario ya vencido) devuelve la misma selección.
  */
 export function applyChange(selection: Selection, change: Change, ctx: Context): Outcome {
@@ -72,7 +77,8 @@ export function applyChange(selection: Selection, change: Change, ctx: Context):
     }
     case "court": {
       const next: Selection = { ...selection, court: change.court };
-      if (selection.hour === null || isFree(selection.date, change.court, selection.hour, ctx)) return unchanged(next);
+      // Sin cancha, la hora elegida sigue valiendo: tenía lugar en la cancha que se deja.
+      if (change.court === null || selection.hour === null || isFree(selection.date, change.court, selection.hour, ctx)) return unchanged(next);
       return {
         selection: { ...next, hour: null },
         notice: { kind: "court-busy", court: change.court, hour: selection.hour, alternatives: alternativesFor("court", selection.date, change.court, selection.hour, ctx), ...yoursFlag(selection.date, change.court, selection.hour, ctx) },
@@ -81,12 +87,8 @@ export function applyChange(selection: Selection, change: Change, ctx: Context):
     case "hour": {
       if (slotStarted(selection.date, change.hour, nowMs)) return unchanged(selection, { kind: "hour-expired", hour: change.hour, reason: "past" });
       if (freeCourtsAt(selection.date, change.hour, ctx).length === 0) return unchanged(selection, { kind: "hour-full", hour: change.hour });
-      const next: Selection = { ...selection, hour: change.hour };
-      if (selection.court === null || isFree(selection.date, selection.court, change.hour, ctx)) return unchanged(next);
-      return {
-        selection: { ...next, court: null },
-        notice: { kind: "hour-busy", court: selection.court, hour: change.hour, alternatives: alternativesFor("hour", selection.date, selection.court, change.hour, ctx), ...yoursFlag(selection.date, selection.court, change.hour, ctx) },
-      };
+      if (selection.court === null || isFree(selection.date, selection.court, change.hour, ctx)) return unchanged({ ...selection, hour: change.hour });
+      return unchanged(selection, { kind: "hour-busy", court: selection.court, hour: change.hour, alternatives: alternativesFor("hour", selection.date, selection.court, change.hour, ctx), ...yoursFlag(selection.date, selection.court, change.hour, ctx) });
     }
     case "pick": {
       if (!isFree(selection.date, change.court, change.hour, ctx)) return unchanged(selection, { kind: "pick-unavailable", court: change.court, hour: change.hour });

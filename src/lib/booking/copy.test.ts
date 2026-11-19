@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { courts } from "../../data/courts.ts";
-import { HOUR_PERIODS, alternativeLabel, correctionText, courtName, dayLabel, formatHour, formatRange, joinList, slotEndText, longDayLabel, noticeText } from "./copy.ts";
+import { DEMO_CONFIRM_NOTE, HOUR_PERIODS, alternativeLabel, correctionText, courtName, dayLabel, firstMissing, formatHour, formatRange, joinList, missingText, slotEndText, longDayLabel, noticeText } from "./copy.ts";
 import type { Notice } from "./conflicts.ts";
 import type { Correction } from "./selection.ts";
 import { HOURS } from "./club-time.ts";
@@ -84,6 +84,24 @@ describe("textos de avisos y correcciones", () => {
 
   it("los avisos de conflicto dicen qué se conservó y qué se liberó", () => {
     assert.equal(noticeText(notices[0]), "Club está ocupada a las 19:00. Elegí otro horario para Club.");
-    assert.equal(noticeText(notices[1]), "Club está ocupada a las 19:00. Elegí otra cancha para ese horario.");
+    assert.equal(noticeText(notices[1]), "Club está ocupada a las 19:00. Elegí otra cancha u otro horario.");
+  });
+});
+
+describe("qué falta para confirmar", () => {
+  const date = "2026-11-20";
+  it("dice qué falta, y la hora va primero, como en la página", () => {
+    assert.equal(missingText({ date, court: null, hour: null }), "Falta elegir hora y cancha.");
+    assert.equal(missingText({ date, court: "01", hour: null }), "Falta elegir la hora.");
+    assert.equal(missingText({ date, court: null, hour: 19 }), "Falta elegir la cancha.");
+    assert.equal(firstMissing({ date, court: null, hour: null }), "hour");
+    assert.equal(firstMissing({ date, court: null, hour: 19 }), "court");
+    assert.equal(firstMissing({ date, court: "01", hour: null }), "hour");
+  });
+
+  it("con la selección completa no falta nada y el aviso aclara que es una demostración", () => {
+    assert.equal(missingText({ date, court: "01", hour: 19 }), null);
+    assert.equal(firstMissing({ date, court: "01", hour: 19 }), null);
+    assert.match(DEMO_CONFIRM_NOTE, /demostración/);
   });
 });

@@ -88,7 +88,7 @@ describe("elegir otra vez un turno propio", () => {
     const outcome = applyChange({ date: slot.date, court: slot.court, hour: null }, { type: "hour", hour: slot.hour }, after);
     if (outcome.notice?.kind !== "hour-busy") return; // si ninguna otra cancha tiene lugar, el aviso es «completo»
     assert.ok(outcome.notice.yours);
-    assert.match(noticeText(outcome.notice), /^Ya reservaste \S+ a las \d\d:00\. Elegí otra cancha para ese horario\.$/);
+    assert.match(noticeText(outcome.notice), /^Ya reservaste \S+ a las \d\d:00\. Elegí otra cancha u otro horario\.$/);
   });
 
   it("una cancha ocupada por otros sigue diciendo «está ocupada»", () => {

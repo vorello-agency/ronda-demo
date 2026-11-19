@@ -1,15 +1,15 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { COURT_IDS, freeCourtsAt, hourAvailability, isFree } from "./availability.ts";
-import { HORIZON_DAYS, HOURS, today } from "./club-time.ts";
+import { HORIZON_DAYS, HOURS, today, type Hour, type IsoDate } from "./club-time.ts";
 import { applyChange, type Notice } from "./conflicts.ts";
 import {
-  SLOT_LENGTH_TEXT, changeAnnouncement, clubTimeNote, courtOptionLabel, courtStatusText, hourCountText, hourOptionLabel,
-  noticeAnnouncement,
+  SLOT_LENGTH_TEXT, changeAnnouncement, clubTimeNote, courtName, courtOptionLabel, courtStatusText, hourCountText, hourNoteText,
+  hourOptionLabel, noticeAnnouncement,
 } from "./copy.ts";
-import { courtOptions, dayOptions, hourCourtMarks, hourPeriods, monthsLabel, noticeOrigin } from "./flow-view.ts";
+import { courtOptions, dayOptions, hourNote, hourPeriods, monthsLabel, noticeOrigin } from "./flow-view.ts";
 import { NOW, contextAt, findScenario } from "./test-utils.ts";
-import type { Selection } from "./types.ts";
+import type { CourtId, Selection } from "./types.ts";
 
 const ctx = contextAt();
 const hoursOf = (selection: Selection) => hourPeriods(selection, ctx).flatMap((period) => period.options);
@@ -55,53 +55,84 @@ describe("horarios", () => {
     assert.deepEqual(periods.flatMap((period) => period.options.map((option) => option.hour)), [...HOURS]);
   });
 
-  it("sin cancha: relleno si alguna tiene lugar, completo si ninguna", () => {
+  it("sin cancha: se puede elegir si alguna tiene lugar; «sin lugar» si ninguna", () => {
     for (const option of hoursOf({ date: "2026-11-09", court: null, hour: null })) {
-      assert.equal(option.tone, option.free.length === 0 ? "full" : "free");
+      assert.equal(option.tone, option.free.length === 0 ? "none" : "free");
       assert.deepEqual([...option.free, ...option.busy].sort(), [...COURT_IDS].sort());
     }
   });
 
-  it("con cancha: «otra cancha» cuando esa cancha está ocupada pero otra no", () => {
+  it("con cancha: solo dos estados, según esa cancha", () => {
+    for (const court of COURT_IDS) {
+      for (const option of hoursOf({ date: "2026-11-09", court, hour: null })) {
+        assert.equal(option.tone, option.free.includes(court) ? "free" : "none");
+        assert.equal(hourCountText(option), option.tone === "none" ? "sin lugar" : "");
+      }
+    }
+  });
+
+  it("con cancha ocupada y otra libre: tachada, y la etiqueta dice dónde hay lugar", () => {
     const { date, court, hour } = findScenario((date, hour) => {
       const { free, busy } = hourAvailability(date, hour, ctx);
-      return free.length > 0 && busy.length > 0 ? { date, court: busy[0], hour } : null;
+      return free.length === 1 && busy.length > 0 ? { date, court: busy[0], hour } : null;
     });
     const option = hoursOf({ date, court, hour: null }).find((item) => item.hour === hour)!;
-    assert.equal(option.tone, "alt");
-    assert.equal(hourCountText(option), "");
-    // El punto de la cancha elegida queda vacío: ahí está el «otra cancha».
-    assert.equal(hourCourtMarks(option).find((mark) => mark.court === court)?.free, false);
-    assert.match(hourOptionLabel(option, court), /está ocupada; libre en .+\. Elegilo para ver alternativas\.$/);
+    assert.equal(option.tone, "none");
+    assert.equal(hourCountText(option), "sin lugar");
+    assert.match(hourOptionLabel(option, court), /^\d\d:00 a \d\d:00\. Sin lugar en \S+\. Libre en \S+\.$/);
   });
 
-  it("completo solo cuando ninguna cancha tiene lugar (0/3), y así se nombra", () => {
+  it("sin lugar en ninguna cancha: tachada con o sin cancha elegida", () => {
     const { date, hour } = findScenario((date, hour) => (freeCourtsAt(date, hour, ctx).length === 0 ? { date, hour } : null));
-    const option = hoursOf({ date, court: "02", hour: null }).find((item) => item.hour === hour)!;
-    assert.equal(option.tone, "full");
-    assert.equal(hourCountText(option), "completo");
-    assert.deepEqual(hourCourtMarks(option), []);
-    assert.match(hourOptionLabel(option, "02"), /Completo: ninguna cancha tiene lugar\.$/);
+    for (const court of [null, "02"] as const) {
+      const option = hoursOf({ date, court, hour: null }).find((item) => item.hour === hour)!;
+      assert.equal(option.tone, "none");
+      assert.equal(hourCountText(option), "sin lugar");
+      assert.match(hourOptionLabel(option, court), court === null ? /\. Todas, sin lugar en ninguna cancha\.$/ : /\. Sin lugar en ninguna cancha\.$/);
+    }
   });
 
-  it("el conteo y la etiqueta coinciden con las canchas libres", () => {
+  it("con lugar: sin texto visible; la etiqueta nombra las canchas libres", () => {
     const option = hoursOf({ date: "2026-11-09", court: null, hour: null }).find((item) => item.free.length === 2)
       ?? hoursOf({ date: "2026-11-10", court: null, hour: null }).find((item) => item.free.length === 2)!;
-    assert.deepEqual(hourCourtMarks(option).filter((mark) => mark.free).map((mark) => mark.court), option.free);
-    assert.match(hourOptionLabel(option, null), /^\d\d:00 a \d\d:00\. 2 de 3 canchas libres: \S+ y \S+\.$/);
-  });
-
-  it("con alguna cancha libre: tres puntos en el orden del plano y sin texto", () => {
-    const option = hoursOf({ date: "2026-11-09", court: null, hour: null }).find((item) => item.free.length === 3)!;
     assert.equal(hourCountText(option), "");
-    assert.deepEqual(hourCourtMarks(option), COURT_IDS.map((court) => ({ court, free: true })));
+    assert.match(hourOptionLabel(option, null), /^\d\d:00 a \d\d:00\. Todas, libre en \S+ y \S+\.$/);
+    const court = option.free[0];
+    assert.match(hourOptionLabel({ ...option, tone: "free" }, court), new RegExp(`\\. Libre en ${courtName(court)}\\.$`));
+  });
+});
+
+describe("nota bajo los horarios", () => {
+  const day = (date: IsoDate, court: CourtId | null) => hourPeriods({ date, court, hour: null }, ctx);
+
+  it("sin cancha elegida no hay nota", () => {
+    assert.equal(hourNote(day("2026-11-09", null), null), null);
   });
 
-  it("una sola cancha libre: un solo punto lleno, el de esa cancha", () => {
-    const { date, hour } = findScenario((date, hour) => (freeCourtsAt(date, hour, ctx).length === 1 ? { date, hour } : null));
-    const option = hoursOf({ date, court: null, hour: null }).find((item) => item.hour === hour)!;
-    assert.deepEqual(hourCourtMarks(option).filter((mark) => mark.free).map((mark) => mark.court), option.free);
-    assert.equal(hourCourtMarks(option).length, COURT_IDS.length);
+  it("con cancha elegida, avisa si alguna hora tachada tiene lugar en otra cancha", () => {
+    for (const date of ["2026-11-09", "2026-11-10", "2026-11-11"] as const) {
+      for (const court of COURT_IDS) {
+        const periods = day(date, court);
+        const options = periods.flatMap((period) => period.options);
+        const struck = options.filter((option) => option.tone === "none");
+        const note = hourNote(periods, court);
+        assert.equal(note !== null, struck.some((option) => option.free.length > 0));
+        if (note?.kind === "all") assert.ok(struck.every((option) => option.free.length > 0));
+        if (note?.kind === "some") assert.ok(struck.some((option) => option.free.length === 0));
+      }
+    }
+  });
+
+  it("los textos de la nota", () => {
+    assert.equal(hourNoteText({ kind: "all", court: "02" }), "Las horas tachadas tienen lugar en otras canchas.");
+    assert.equal(hourNoteText({ kind: "some", court: "02" }), "Algunas horas tachadas tienen lugar en otras canchas.");
+  });
+
+  it("si la cancha no tiene lugar en todo el día, lo dice con su nombre", () => {
+    const option = (hour: number, free: CourtId[]) => ({ hour: hour as Hour, free, busy: COURT_IDS.filter((id) => !free.includes(id)), tone: "none" as const });
+    const periods = [{ label: "Noche", options: [option(20, ["01"]), option(21, [])] }];
+    assert.deepEqual(hourNote(periods, "02"), { kind: "day", court: "02" });
+    assert.equal(hourNoteText({ kind: "day", court: "02" }), "Central no tiene lugar este día.");
   });
 });
 
@@ -136,12 +167,13 @@ describe("canchas en el plano", () => {
 });
 
 describe("avisos y anuncios", () => {
-  it("el aviso de una cancha ocupada va junto al plano; el resto, junto a los horarios", () => {
+  it("el aviso de una cancha ocupada va donde se eligió la cancha (plano o «Ver horarios de»); el resto, junto a los horarios", () => {
     const busy: Notice = { kind: "court-busy", court: "01", hour: 19, alternatives: [] };
-    assert.equal(noticeOrigin(busy), "court");
-    assert.equal(noticeOrigin({ kind: "hour-busy", court: "01", hour: 19, alternatives: [] }), "hour");
+    assert.equal(noticeOrigin(busy, "court"), "court");
+    assert.equal(noticeOrigin(busy, "hour"), "hour");
+    assert.equal(noticeOrigin({ kind: "hour-busy", court: "01", hour: 19, alternatives: [] }, "court"), "hour");
     assert.equal(noticeOrigin({ kind: "pick-unavailable", court: "01", hour: 19 }, "court"), "court");
-    assert.equal(noticeOrigin({ kind: "hour-full", hour: 19 }), "hour");
+    assert.equal(noticeOrigin({ kind: "hour-full", hour: 19 }, "court"), "hour");
   });
 
   it("el anuncio de un conflicto incluye las alternativas", () => {
@@ -155,6 +187,9 @@ describe("avisos y anuncios", () => {
     const free = findScenario((date, hour) => (date === "2026-11-09" && freeCourtsAt(date, hour, ctx).length > 0 ? hour : null));
     assert.equal(changeAnnouncement({ type: "date", date: "2026-11-10" }, applyChange(base, { type: "date", date: "2026-11-10" }, ctx)), "Disponibilidad del martes 10 de noviembre.");
     assert.equal(changeAnnouncement({ type: "court", court: "02" }, applyChange(base, { type: "court", court: "02" }, ctx)), "Central elegida.");
+    const withCourt: Selection = { ...base, court: "02" };
+    assert.equal(changeAnnouncement({ type: "court", court: null }, applyChange(withCourt, { type: "court", court: null }, ctx), withCourt), "Horarios de todas las canchas. Central ya no está elegida.");
+    assert.equal(changeAnnouncement({ type: "court", court: null }, applyChange(base, { type: "court", court: null }, ctx), base), "Horarios de todas las canchas.");
     assert.equal(changeAnnouncement({ type: "hour", hour: free }, applyChange(base, { type: "hour", hour: free }, ctx)), `Horario de las ${String(free).padStart(2, "0")}:00 elegido.`);
   });
 
